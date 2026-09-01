@@ -1,4 +1,4 @@
-# INSTRUCTIONS.md — Instrucciones extendidas del agente
+# INSTRUCCIONES.md — Instrucciones extendidas del agente
 
 Complementa al arnés `.opencoderules`. Define cómo el agente debe operar sobre este repositorio de forma pedagógica y gobernada.
 
