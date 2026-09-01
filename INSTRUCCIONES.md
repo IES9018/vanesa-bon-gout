@@ -1,6 +1,4 @@
-# INSTRUCCIONES.md — Instrucciones extendidas del agente
-
-Complementa al arnés `.opencoderules`. Define cómo el agente debe operar sobre este repositorio de forma pedagógica y gobernada.
+# INSTRUCCIONES.md — 
 
 ## Principios de operación
 
@@ -18,6 +16,4 @@ Complementa al arnés `.opencoderules`. Define cómo el agente debe operar sobre
 4. Implementá con tipado estricto y pruebas.
 5. Abrí el PR describiendo qué `RF-XX`/`CA-XX` cumple y qué alternativas se evaluaron.
 
-## Recordatorio
 
-Este repositorio pertenece a la organización **IES9018** y su estructura y control de calidad siguen las consignas de `proyecto-adi-2026` y `proyecto-pp3-2026`. Trabajá siempre bajo el principio de auditoría crítica: el código y las decisiones son revisables por el docente.
