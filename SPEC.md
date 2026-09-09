@@ -1,4 +1,4 @@
-# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout
+# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout (v2)
 
 ## 1. Contexto y Propósito
 
@@ -116,3 +116,26 @@ interface Inventario {
 - [ ] **CA-04:** El tiempo de carga de las páginas es menor a 3 segundos en el 95% de las solicitudes.
 - [ ] **CA-05:** El sistema soporta al menos 100 usuarios simultáneos sin degradación.
 - [ ] **CA-06:** Toda la funcionalidad es accesible y usable desde dispositivos móviles (responsive).
+
+## 7. Restricciones Arquitectónicas
+
+Las decisiones arquitectónicas del sistema están documentadas en la carpeta `docs/adr/`:
+
+| ID | Decisión | Archivo |
+|---|---|---|
+| ADR-001 | Stack tecnológico (React + Node.js + PostgreSQL) | `docs/adr/ADR-001-stack-tecnologico.md` |
+| ADR-002 | Estilo arquitectónico (monolítico modular en capas) | `docs/adr/ADR-002-estilo-arquitectonico.md` |
+| ADR-003 | Estrategia de persistencia (PostgreSQL) | `docs/adr/ADR-003-persistencia.md` |
+
+Restricciones derivadas de estas decisiones:
+
+- No se pueden introducir frameworks, bases de datos o servicios externos que no estén declarados en un ADR aprobado.
+- La arquitectura es monolítica modular en capas: rutas, controladores, servicios, repositorios, modelos.
+- Toda la persistencia se realiza en PostgreSQL; no se permiten bases de datos adicionales sin un ADR nuevo.
+- El despliegue se realiza mediante Docker Compose con los servicios: frontend, backend, postgres.
+
+## Changelog
+
+| Versión | Fecha | Motivo |
+|---|---|---|
+| v1 → v2 | 2026-09-09 | Se agregó sección Restricciones Arquitectónicas citando ADR-001/002/003. Se incorporaron los diagramas C4 de contexto y contenedores. |
