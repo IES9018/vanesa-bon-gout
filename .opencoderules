@@ -35,3 +35,8 @@ Este archivo limita y dirige la generación de código del agente local (OpenCod
 - ❌ Escribir `SPEC.md` o un ADR sin pasar por el flujo de rama + Pull Request.
 - ❌ Implementar features fuera de los Non-Goals del MVP.
 - ❌ Generar código sin pruebas para la lógica de negocio crítica (pedidos e inventario).
+
+## 5. Coherencia Arquitectónica
+
+- PROHIBIDO introducir frameworks, bases de datos o servicios externos que no estén declarados en un ADR aprobado. Ante duda, proponer un ADR nuevo antes de implementar.
+- Todo cambio arquitectónico debe registrarse en un ADR antes de modificarse el código afectado.
