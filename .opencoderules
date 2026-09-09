@@ -1,0 +1,37 @@
+# Arnés de Agente IA — Bon Gout (IES 9-018 · ADI 2026)
+
+Este archivo limita y dirige la generación de código del agente local (OpenCode) en este repositorio. Todo cambio debe respetar la `SPEC.md` y las decisiones registradas en `docs/adr/`.
+
+## 1. Fuente de Verdad (SSOT)
+
+- La **`SPEC.md`** es la única fuente de verdad de los requerimientos. Nunca agregues funcionalidades que no estén especificadas.
+- Las decisiones arquitectónicas viven en **`docs/adr/`**. Toda decisión nueva o cambio debe registrarse en un ADR antes de implementarse.
+
+## 2. Alcance Permitido
+
+- Trabajá únicamente dentro de estas rutas:
+  - `frontend/`
+  - `backend/`
+  - `database/`
+  - `docs/`
+  - `docker/`
+  - `.github/`
+- No modifiques archivos fuera de esas carpetas salvo autorización explícita y registrada.
+
+## 3. Estándares Técnicos Obligatorios
+
+- **Tipado estricto:** JavaScript moderno con **TypeScript** en modo estricto (`strict: true`). Prohibido usar `any` implícito.
+- **Sintaxis:** ECMAScript 2024 (ES2024) como objetivo de compilación.
+- **API REST:** seguir los contratos definidos en la SPEC (verbos HTTP y recursos consistentes).
+- **Commits convencionales:** `feat:`, `fix:`, `docs:`, `refactor:`, `style:`, `chore:`.
+- **Ramas:** `feature/<tema>` hacia `main`, con Pull Request y revisión.
+- **Seguridad:** nunca loguear o versionar secretos (tokens, contraseñas, `JWT_SECRET`, etc.). Usar variables de entorno.
+
+## 4. Prácticas Prohibidas
+
+- ❌ Uso de tipo `any` (salvo casos justificados y documentados en el PR).
+- ❌ Dependencias no aprobadas: no instalar librerías sin justificar su necesidad en el PR.
+- ❌ Hardcodear credenciales o claves de API en el código fuente.
+- ❌ Escribir `SPEC.md` o un ADR sin pasar por el flujo de rama + Pull Request.
+- ❌ Implementar features fuera de los Non-Goals del MVP.
+- ❌ Generar código sin pruebas para la lógica de negocio crítica (pedidos e inventario).
