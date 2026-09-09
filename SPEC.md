@@ -1,4 +1,4 @@
-# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout (v2)
+# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout (v3)
 
 ## 1. Contexto y Propósito
 
@@ -110,12 +110,52 @@ interface Inventario {
 
 ## 6. Criterios de Aceptación
 
-- [ ] **CA-01:** El cliente puede recorrer el catálogo completo, personalizar un producto (Ej. mensaje "Feliz Cumpleaños") y completar un pedido end-to-end (TC001).
-- [ ] **CA-02:** El sistema impide la venta de un producto sin stock disponible y notifica su agotamiento (TC002).
-- [ ] **CA-03:** La administradora puede ver en el dashboard las ventas diarias, semanales y mensuales.
-- [ ] **CA-04:** El tiempo de carga de las páginas es menor a 3 segundos en el 95% de las solicitudes.
-- [ ] **CA-05:** El sistema soporta al menos 100 usuarios simultáneos sin degradación.
-- [ ] **CA-06:** Toda la funcionalidad es accesible y usable desde dispositivos móviles (responsive).
+### RF-01: Catálogo de productos
+
+- **CA-01:** El cliente puede recorrer el catálogo completo, personalizar un producto (Ej. mensaje "Feliz Cumpleaños") y completar un pedido end-to-end (TC001).
+  - **Given** que el cliente está en la página principal,
+  - **When** hace clic en "Catálogo" y navega los productos,
+  - **Then** ve la lista de productos con imagen, nombre y precio.
+  - **When** selecciona un producto y escribe un mensaje de personalización,
+  - **Then** el sistema guarda la personalización y muestra el producto en el carrito con el mensaje adjunto.
+
+- **CA-02:** El sistema impide la venta de un producto sin stock disponible y notifica su agotamiento (TC002).
+  - **Given** que un producto tiene stock = 0,
+  - **When** el cliente intenta agregarlo al carrito,
+  - **Then** el sistema muestra "Producto agotado" y el botón está deshabilitado.
+
+### RF-02: Carrito de compras
+
+- **CA-07:** El cliente puede agregar, modificar cantidad y eliminar productos del carrito.
+  - **Given** que el cliente tiene productos en el carrito,
+  - **When** modifica la cantidad de un producto,
+  - **Then** el sistema actualiza el subtotal y el total del carrito.
+  - **When** elimina un producto,
+  - **Then** el sistema muestra confirmación y actualiza el total.
+
+### RF-03: Pedidos online
+
+- **CA-08:** El cliente puede confirmar un pedido seleccionando fecha de entrega y método de pago.
+  - **Given** que el cliente tiene productos en el carrito,
+  - **When** selecciona fecha de entrega (mínimo 48hs hábiles) y método de pago,
+  - **Then** el sistema crea el pedido con estado "pendiente" y muestra confirmación.
+
+### Criterios generales
+
+- **CA-03:** La administradora puede ver en el dashboard las ventas diarias, semanales y mensuales.
+- **CA-04:** El tiempo de carga de las páginas es menor a 3 segundos en el 95% de las solicitudes.
+- **CA-05:** El sistema soporta al menos 100 usuarios simultáneos sin degradación.
+- **CA-06:** Toda la funcionalidad es accesible y usable desde dispositivos móviles (responsive).
+
+## 7. Requisitos de Accesibilidad
+
+Las 2 pantallas críticas (catálogo y checkout) deben cumplir:
+
+- **AC-01:** Navegación completa por teclado (Tab, Shift+Tab, Enter, Escape).
+- **AC-02:** Contraste de texto mínimo AA (4.5:1 para texto normal, 3:1 para texto grande).
+- **AC-03:** Todos los elementos interactivos tienen focus visible.
+- **AC-04:** Los formularios tienen labels asociados (htmlFor / aria-label).
+- **AC-05:** Los mensajes de error se asocian a campos mediante aria-describedby.
 
 ## 7. Restricciones Arquitectónicas
 
@@ -126,6 +166,7 @@ Las decisiones arquitectónicas del sistema están documentadas en la carpeta `d
 | ADR-001 | Stack tecnológico (React + Node.js + PostgreSQL) | `docs/adr/ADR-001-stack-tecnologico.md` |
 | ADR-002 | Estilo arquitectónico (monolítico modular en capas) | `docs/adr/ADR-002-estilo-arquitectonico.md` |
 | ADR-003 | Estrategia de persistencia (PostgreSQL) | `docs/adr/ADR-003-persistencia.md` |
+| ADR-004 | Stack de UI (Tailwind CSS + Headless UI) | `docs/adr/ADR-004-stack-ui.md` |
 
 Restricciones derivadas de estas decisiones:
 
@@ -139,3 +180,4 @@ Restricciones derivadas de estas decisiones:
 | Versión | Fecha | Motivo |
 |---|---|---|
 | v1 → v2 | 2026-09-09 | Se agregó sección Restricciones Arquitectónicas citando ADR-001/002/003. Se incorporaron los diagramas C4 de contexto y contenedores. |
+| v2 → v3 | 2026-09-09 | Se agregaron criterios de aceptación estilo Given/When/Then para RF-01, RF-02, RF-03. Se agregó sección 7: Requisitos de Accesibilidad (AC-01 a AC-05). Se agregó ADR-004 (Stack de UI). |
