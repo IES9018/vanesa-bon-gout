@@ -1,4 +1,4 @@
-# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout (v4)
+# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout (v5)
 
 ## 1. Contexto y Propósito
 
@@ -168,6 +168,7 @@ Las decisiones arquitectónicas del sistema están documentadas en la carpeta `d
 | ADR-003 | Estrategia de persistencia (PostgreSQL) | `docs/adr/ADR-003-persistencia.md` |
 | ADR-004 | Stack de UI (Tailwind CSS + Headless UI) | `docs/adr/ADR-004-stack-ui.md` |
 | ADR-005 | Estrategia web (SPA React + Vite contra API REST) | `docs/adr/ADR-005-estrategia-web.md` |
+| ADR-006 | Estrategia mobile (responsive + PWA) | `docs/adr/ADR-006-estrategia-mobile.md` |
 
 Restricciones derivadas de estas decisiones:
 
@@ -195,6 +196,16 @@ schemas (`Producto`, `Pedido`, `CrearPedido`, `CarritoItem`) son los de la
 sección 5. Las amenazas y mitigaciones viven en
 `docs/seguridad/threat-model-lite.md` (STRIDE, T-01 a T-06).
 
+## 9. Requisitos No Funcionales medibles (TP5)
+
+| ID | Requisito | Presupuesto | Verificación |
+|---|---|---|---|
+| RNF-01 | Catálogo móvil rápido en 4G | LCP < 2.5s | Lighthouse CI en pipeline |
+| RNF-02 | Interacción sin lag | INP < 200ms | Lighthouse CI en pipeline |
+| RNF-03 | Bundle liviano | JS < 200KB gzip | Presupuesto CI (falla el run si excede) |
+| RNF-04 | Catálogo offline | Abre sin red desde caché PWA | Service Worker + outbox (ver `offline-sync.md`) |
+| RNF-05 | Táctil accesible | Targets ≥ 48px en <400px | Wireframe `pantalla-movil.md` + AC-01..AC-05 |
+
 ## Changelog
 
 | Versión | Fecha | Motivo |
@@ -202,3 +213,4 @@ sección 5. Las amenazas y mitigaciones viven en
 | v1 → v2 | 2026-09-09 | Se agregó sección Restricciones Arquitectónicas citando ADR-001/002/003. Se incorporaron los diagramas C4 de contexto y contenedores. |
 | v2 → v3 | 2026-09-09 | Se agregaron criterios de aceptación estilo Given/When/Then para RF-01, RF-02, RF-03. Se agregó sección 7: Requisitos de Accesibilidad (AC-01 a AC-05). Se agregó ADR-004 (Stack de UI). |
 | v3 → v4 | 2026-09-22 | TP4: sección 8 Contratos API (5 endpoints OpenAPI + errores 400/401/404/500). ADR-005 (SPA). Threat model STRIDE (T-01 a T-06). Arnés v3 (no secrets, validación en borde, API-First). |
+| v4 → v5 | 2026-09-22 | TP5: sección 9 RNF medibles (LCP/INP/JS/offline/48px). ADR-006 (responsive+PWA). Presupuestos de rendimiento, offline-sync y wireframe móvil <400px. |
