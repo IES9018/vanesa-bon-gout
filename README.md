@@ -1,5 +1,7 @@
 # vanesa-bon-gout
 
+[![CI](https://github.com/IES9018/vanesa-bon-gout/actions/workflows/ci.yml/badge.svg)](https://github.com/IES9018/vanesa-bon-gout/actions/workflows/ci.yml)
+
 Repositorio de trabajo del proyecto **Bon Gout** — Sistema Digital Integral para la Pasteleria Artesanal Bon Gout (Malargue, Mendoza).
 
 Materia: Arquitectura y Diseno de Interfaces · IES 9-018 · Ciclo 2026
@@ -28,7 +30,8 @@ Bon Gout es una pasteleria artesanal que desde 2018 elabora productos de reposte
 ├── .opencoderules                 Arnés de IA (reglas del agente)
 ├── INSTRUCCIONES.md               Instrucciones extendidas del agente
 ├── README.md                      Este archivo
-├── SPEC.md                        Especificacion del MVP (v2)
+├── SPEC.md                        Especificacion del MVP (vFinal, congelada v0.1.0)
+├── CHANGELOG.md                   Historial de releases (Keep a Changelog)
 └── docs/
     ├── adr/
     │   ├── ADR-001-stack-tecnologico.md
@@ -48,6 +51,9 @@ Bon Gout es una pasteleria artesanal que desde 2018 elabora productos de reposte
 | ADR-001 | Stack tecnologico | docs/adr/ADR-001-stack-tecnologico.md |
 | ADR-002 | Estilo arquitectonico (monolitico modular) | docs/adr/ADR-002-estilo-arquitectonico.md |
 | ADR-003 | Persistencia (PostgreSQL) | docs/adr/ADR-003-persistencia.md |
+| ADR-004 | Stack UI (Tailwind + Headless) | docs/adr/ADR-004-stack-ui.md |
+| ADR-005 | Estrategia web (SPA) | docs/adr/ADR-005-estrategia-web.md |
+| ADR-006 | Estrategia mobile (responsive + PWA) | docs/adr/ADR-006-estrategia-mobile.md |
 
 ## Diagramas C4
 
@@ -61,6 +67,12 @@ Bon Gout es una pasteleria artesanal que desde 2018 elabora productos de reposte
 | TP1 - SDD y Arnes | Completado | #2 merged |
 | Sprint 1 - Cierre | Completado | #4 merged |
 | TP2 - Arquitectura Visible | Completado | #5 merged |
+| TP3 - HCI | Completado | #7 merged |
+| Sprint 2 - Nucleo + reparacion | Completado | #8, #10 merged |
+| CI verde | Completado | #9 merged |
+| TP4 - API-First y Web Segura | Completado | #11 merged |
+| TP5 - Mobile medible | Completado | #12 merged |
+| TP6 - Cierre + release v0.1.0 | Completado | #13 merged |
 
 ## Flujo de Trabajo
 

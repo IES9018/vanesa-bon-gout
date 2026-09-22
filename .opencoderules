@@ -1,48 +1,44 @@
-# Arnés de Agente IA — Bon Gout (IES 9-018 · ADI 2026)
+# Arnés de Agente IA — Bon Gout (IES 9-018 · ADI 2026) — vFinal
 
-Este archivo limita y dirige la generación de código del agente local (OpenCode) en este repositorio. Todo cambio debe respetar la `SPEC.md` y las decisiones registradas en `docs/adr/`.
+Versión consolidada y congelada para la release v0.1.0. Reúne todas las reglas
+sin duplicados: alcance, estándares, prohibiciones y proceso.
 
 ## 1. Fuente de Verdad (SSOT)
 
-- La **`SPEC.md`** es la única fuente de verdad de los requerimientos. Nunca agregues funcionalidades que no estén especificadas.
-- Las decisiones arquitectónicas viven en **`docs/adr/`**. Toda decisión nueva o cambio debe registrarse en un ADR antes de implementarse.
+- La **`SPEC.md` (vFinal, congelada)** es la única fuente de verdad. Nunca
+  agregues funcionalidades fuera de ella.
+- Las decisiones viven en **`docs/adr/`** (ADR-001 a ADR-006). Ningún cambio
+  arquitectónico sin ADR previo.
 
 ## 2. Alcance Permitido
 
-- Trabajá únicamente dentro de estas rutas:
-  - `frontend/`
-  - `backend/`
-  - `database/`
-  - `docs/`
-  - `docker/`
-  - `.github/`
-- No modifiques archivos fuera de esas carpetas salvo autorización explícita y registrada.
+- Trabajá únicamente en: `frontend/`, `backend/`, `database/`, `docs/`,
+  `docker/`, `.github/`, más `CHANGELOG.md` para releases.
+- No modifiques archivos fuera de esas rutas sin autorización registrada.
 
-## 3. Estándares Técnicos Obligatorios
+## 3. Estándares Técnicos
 
-- **Tipado estricto:** JavaScript moderno con **TypeScript** en modo estricto (`strict: true`). Prohibido usar `any` implícito.
-- **Sintaxis:** ECMAScript 2024 (ES2024) como objetivo de compilación.
-- **API REST:** seguir los contratos definidos en la SPEC (verbos HTTP y recursos consistentes).
-- **Commits convencionales:** `feat:`, `fix:`, `docs:`, `refactor:`, `style:`, `chore:`.
-- **Ramas:** `feature/<tema>` hacia `main`, con Pull Request y revisión.
-- **Seguridad:** nunca loguear o versionar secretos (tokens, contraseñas, `JWT_SECRET`, etc.). Usar variables de entorno.
+- TypeScript estricto (`strict: true`), ES2024, sin `any` implícito.
+- API REST según `docs/arquitectura/api-contracts.yaml` (fuente API-First).
+- Commits convencionales (`feat:`, `fix:`, `docs:`, `refactor:`, `style:`,
+  `chore:`); ramas `feature/<tema>` → PR → `main`.
+- Validar y sanear toda entrada en el borde (rutas, con `zod`).
+- Secretos solo por variables de entorno (ver `docker/.env.example`).
 
-## 4. Prácticas Prohibidas
+## 4. Prohibiciones
 
-- ❌ Uso de tipo `any` (salvo casos justificados y documentados en el PR).
-- ❌ Dependencias no aprobadas: no instalar librerías sin justificar su necesidad en el PR.
-- ❌ Hardcodear credenciales o claves de API en el código fuente.
-- ❌ Escribir `SPEC.md` o un ADR sin pasar por el flujo de rama + Pull Request.
-- ❌ Implementar features fuera de los Non-Goals del MVP.
-- ❌ Generar código sin pruebas para la lógica de negocio crítica (pedidos e inventario).
+- ❌ `any` injustificado, dependencias sin justificar en el PR.
+- ❌ Secretos hardcodeados o logueados.
+- ❌ SPEC/ADR sin flujo de rama + PR.
+- ❌ Features fuera de Non-Goals; frameworks/BD/servicios sin ADR.
+- ❌ Código de negocio crítico (pedidos, inventario) sin pruebas.
+- ❌ Endpoint nuevo sin especificarlo primero en `api-contracts.yaml`.
+- ❌ Merge con CI en rojo (lint + tests + build + Redocly deben estar verdes).
 
-## 5. Coherencia Arquitectónica
+## 5. Proceso ante una funcionalidad nueva
 
-- PROHIBIDO introducir frameworks, bases de datos o servicios externos que no estén declarados en un ADR aprobado. Ante duda, proponer un ADR nuevo antes de implementar.
-- Todo cambio arquitectónico debe registrarse en un ADR antes de modificarse el código afectado.
-
-## 6. API-First y Seguridad (v3 — TP4)
-
-- PROHIBIDO hardcodear secretos (JWT, DB, MercadoPago): solo variables de entorno (ver `docker/.env.example`).
-- Toda entrada se valida y sanea en el borde (rutas, con `zod`) antes de llegar a los servicios.
-- Todo endpoint nuevo se especifica PRIMERO en `docs/arquitectura/api-contracts.yaml` (OpenAPI) y debe pasar `npx @redocly/cli lint` en CI.
+1. Verificar el requisito en la SPEC (si falta, primero PR de SPEC).
+2. Revisar/crear el ADR que lo condicione.
+3. Especificar el endpoint en el YAML si aplica.
+4. Rama `feature/<tema>`, tipado estricto + pruebas, PR con RF/CA y
+   alternativas evaluadas.
