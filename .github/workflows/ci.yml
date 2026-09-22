@@ -37,3 +37,7 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Lint OpenAPI
+        working-directory: .
+        run: npx --yes @redocly/cli@1 lint docs/arquitectura/api-contracts.yaml

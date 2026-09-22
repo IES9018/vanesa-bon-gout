@@ -40,3 +40,9 @@ Este archivo limita y dirige la generación de código del agente local (OpenCod
 
 - PROHIBIDO introducir frameworks, bases de datos o servicios externos que no estén declarados en un ADR aprobado. Ante duda, proponer un ADR nuevo antes de implementar.
 - Todo cambio arquitectónico debe registrarse en un ADR antes de modificarse el código afectado.
+
+## 6. API-First y Seguridad (v3 — TP4)
+
+- PROHIBIDO hardcodear secretos (JWT, DB, MercadoPago): solo variables de entorno (ver `docker/.env.example`).
+- Toda entrada se valida y sanea en el borde (rutas, con `zod`) antes de llegar a los servicios.
+- Todo endpoint nuevo se especifica PRIMERO en `docs/arquitectura/api-contracts.yaml` (OpenAPI) y debe pasar `npx @redocly/cli lint` en CI.
