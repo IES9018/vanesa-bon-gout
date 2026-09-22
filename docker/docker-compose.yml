@@ -1,42 +1,37 @@
-version: '3.8'
-
+# Stack local Bon Gout: postgres + backend.
+# El servicio `frontend` se agregará cuando exista la app React/Vite
+# (ver docs/arquitectura/deuda-sprint2.md). Sin secretos hardcodeados:
+# copiar `.env.example` a `.env` (no versionado) o exportar variables.
 services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: bongout
-      POSTGRES_USER: bongout
-      POSTGRES_PASSWORD: bongout_secret
+      POSTGRES_DB: ${DB_NAME:-bongout}
+      POSTGRES_USER: ${DB_USER:-bongout}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Definir DB_PASSWORD en .env o entorno}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-bongout}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
       context: ../backend
       dockerfile: Dockerfile
     ports:
-      - "3001:3001"
+      - "${PORT:-3001}:3001"
     environment:
-      PORT: 3001
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: bongout
-      DB_USER: bongout
-      DB_PASSWORD: bongout_secret
-      JWT_SECRET: cambio-en-produccion
+      PORT: ${PORT:-3001}
+      DATABASE_URL: postgres://${DB_USER:-bongout}:${DB_PASSWORD:?Definir DB_PASSWORD}@postgres:${DB_PORT:-5432}/${DB_NAME:-bongout}
+      JWT_SECRET: ${JWT_SECRET:?Definir JWT_SECRET en .env o entorno}
     depends_on:
-      - postgres
-
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
+      postgres:
+        condition: service_healthy
 
 volumes:
   pgdata:
