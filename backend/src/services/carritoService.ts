@@ -1,4 +1,4 @@
-import { CarritoItem, Producto } from '../types';
+import { CarritoItem } from '../types';
 import { obtenerPorId, verificarStock } from './productoService';
 
 export interface Carrito {
