@@ -1,4 +1,4 @@
-# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout (v5)
+# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout (vFinal — congelada v0.1.0)
 
 ## 1. Contexto y Propósito
 
@@ -14,9 +14,9 @@ El objetivo general del proyecto es proveer una plataforma de **e-commerce y ges
 
 ## 2. Requerimientos Funcionales
 
-- [ ] **RF-01:** Sistema de catálogo de productos con imágenes, descripciones, precios y opciones de personalización.
-- [ ] **RF-02:** Carrito de compras para agregar, modificar y eliminar productos.
-- [ ] **RF-03:** Sistema de pedidos online, desde la selección hasta la confirmación del pedido.
+- [x] **RF-01:** Sistema de catálogo de productos con imágenes, descripciones, precios y opciones de personalización. *(Implementado: `productoRoutes` + 9 tests + 3 de integración.)*
+- [x] **RF-02:** Carrito de compras para agregar, modificar y eliminar productos. *(Implementado: `carritoRoutes` + 8 tests + 2 de integración.)*
+- [x] **RF-03:** Sistema de pedidos online, desde la selección hasta la confirmación del pedido. *(Implementado: `pedidoRoutes` + 4 tests + 5 de integración.)*
 - [ ] **RF-04:** Gestión de pagos digitales mediante integración con MercadoPago y transferencias bancarias.
 - [ ] **RF-05:** Sistema de reservas/citas para programación de entregas y consultas presenciales.
 - [ ] **RF-06:** Gestión de inventario con control de stock de ingredientes y productos terminados.
@@ -157,7 +157,7 @@ Las 2 pantallas críticas (catálogo y checkout) deben cumplir:
 - **AC-04:** Los formularios tienen labels asociados (htmlFor / aria-label).
 - **AC-05:** Los mensajes de error se asocian a campos mediante aria-describedby.
 
-## 7. Restricciones Arquitectónicas
+## 8. Restricciones Arquitectónicas
 
 Las decisiones arquitectónicas del sistema están documentadas en la carpeta `docs/adr/`:
 
@@ -177,7 +177,7 @@ Restricciones derivadas de estas decisiones:
 - Toda la persistencia se realiza en PostgreSQL; no se permiten bases de datos adicionales sin un ADR nuevo.
 - El despliegue se realiza mediante Docker Compose con los servicios: frontend, backend, postgres.
 
-## 8. Contratos API (TP4)
+## 9. Contratos API (TP4)
 
 Los 5 endpoints críticos están congelados en `docs/arquitectura/api-contracts.yaml`
 (OpenAPI 3.0.3, fuente de verdad API-First):
@@ -196,7 +196,7 @@ schemas (`Producto`, `Pedido`, `CrearPedido`, `CarritoItem`) son los de la
 sección 5. Las amenazas y mitigaciones viven en
 `docs/seguridad/threat-model-lite.md` (STRIDE, T-01 a T-06).
 
-## 9. Requisitos No Funcionales medibles (TP5)
+## 10. Requisitos No Funcionales medibles (TP5)
 
 | ID | Requisito | Presupuesto | Verificación |
 |---|---|---|---|
@@ -214,3 +214,4 @@ sección 5. Las amenazas y mitigaciones viven en
 | v2 → v3 | 2026-09-09 | Se agregaron criterios de aceptación estilo Given/When/Then para RF-01, RF-02, RF-03. Se agregó sección 7: Requisitos de Accesibilidad (AC-01 a AC-05). Se agregó ADR-004 (Stack de UI). |
 | v3 → v4 | 2026-09-22 | TP4: sección 8 Contratos API (5 endpoints OpenAPI + errores 400/401/404/500). ADR-005 (SPA). Threat model STRIDE (T-01 a T-06). Arnés v3 (no secrets, validación en borde, API-First). |
 | v4 → v5 | 2026-09-22 | TP5: sección 9 RNF medibles (LCP/INP/JS/offline/48px). ADR-006 (responsive+PWA). Presupuestos de rendimiento, offline-sync y wireframe móvil <400px. |
+| v5 → vFinal | 2026-09-22 | TP6: SPEC congelada para v0.1.0. Renumeración (7 accesibilidad, 8 restricciones, 9 contratos, 10 RNF). RF-01/02/03 tildados con evidencia de implementación. Arnés consolidado vFinal. |
