@@ -1,4 +1,4 @@
-# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout (v3)
+# SPEC-001: Sistema Digital Integral para la Pastelería Bon Gout (v4)
 
 ## 1. Contexto y Propósito
 
@@ -167,6 +167,7 @@ Las decisiones arquitectónicas del sistema están documentadas en la carpeta `d
 | ADR-002 | Estilo arquitectónico (monolítico modular en capas) | `docs/adr/ADR-002-estilo-arquitectonico.md` |
 | ADR-003 | Estrategia de persistencia (PostgreSQL) | `docs/adr/ADR-003-persistencia.md` |
 | ADR-004 | Stack de UI (Tailwind CSS + Headless UI) | `docs/adr/ADR-004-stack-ui.md` |
+| ADR-005 | Estrategia web (SPA React + Vite contra API REST) | `docs/adr/ADR-005-estrategia-web.md` |
 
 Restricciones derivadas de estas decisiones:
 
@@ -175,9 +176,29 @@ Restricciones derivadas de estas decisiones:
 - Toda la persistencia se realiza en PostgreSQL; no se permiten bases de datos adicionales sin un ADR nuevo.
 - El despliegue se realiza mediante Docker Compose con los servicios: frontend, backend, postgres.
 
+## 8. Contratos API (TP4)
+
+Los 5 endpoints críticos están congelados en `docs/arquitectura/api-contracts.yaml`
+(OpenAPI 3.0.3, fuente de verdad API-First):
+
+| Método | Ruta | Operación | Auth |
+|---|---|---|---|
+| GET | `/api/productos` | `listarProductos` | pública |
+| POST | `/api/carrito/{clienteId}/agregar` | `agregarAlCarrito` | pública |
+| POST | `/api/pedidos` | `crearPedido` | JWT |
+| GET | `/api/pedidos/{id}` | `obtenerPedido` | JWT |
+| PATCH | `/api/pedidos/{id}/estado` | `cambiarEstadoPedido` | JWT + rol |
+
+Respuestas de error normalizadas: `400` (validación/stock/fecha <48h), `401`
+(JWT ausente/inválido), `404` (recurso inexistente), `500` (interno). Los
+schemas (`Producto`, `Pedido`, `CrearPedido`, `CarritoItem`) son los de la
+sección 5. Las amenazas y mitigaciones viven en
+`docs/seguridad/threat-model-lite.md` (STRIDE, T-01 a T-06).
+
 ## Changelog
 
 | Versión | Fecha | Motivo |
 |---|---|---|
 | v1 → v2 | 2026-09-09 | Se agregó sección Restricciones Arquitectónicas citando ADR-001/002/003. Se incorporaron los diagramas C4 de contexto y contenedores. |
 | v2 → v3 | 2026-09-09 | Se agregaron criterios de aceptación estilo Given/When/Then para RF-01, RF-02, RF-03. Se agregó sección 7: Requisitos de Accesibilidad (AC-01 a AC-05). Se agregó ADR-004 (Stack de UI). |
+| v3 → v4 | 2026-09-22 | TP4: sección 8 Contratos API (5 endpoints OpenAPI + errores 400/401/404/500). ADR-005 (SPA). Threat model STRIDE (T-01 a T-06). Arnés v3 (no secrets, validación en borde, API-First). |
