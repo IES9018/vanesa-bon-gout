@@ -1,6 +1,9 @@
+import dotenv from 'dotenv';
 import app from './app';
 
-const PORT = process.env.PORT || 3001;
+dotenv.config();
+
+const PORT = process.env['PORT'] || 3001;
 
 app.listen(PORT, () => {
   console.log(`Servidor Bon Gout corriendo en puerto ${PORT}`);

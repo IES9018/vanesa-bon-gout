@@ -39,7 +39,19 @@ incumplimiento oculto.
 | ID | Entregable | Estado |
 |---|---|---|
 | DEL-S3-01 | `api-contracts.yaml` implementada, linter limpio | ✅ Contrato + lint CI verde |
-| DEL-S3-02 | Threat model + mitigaciones aplicadas | ⚠️ Modelo ✅, aplicación en código pendiente (deuda) |
-| DEL-S3-03 | Presupuestos medidos con evidencia | ⚠️ Contrato ✅, medición activa con primer frontend |
-| DEL-S3-04 | URL pública o artefacto reproducible | ✅ Artefacto reproducible (`docs/deploy/deploy.md`) |
+| DEL-S3-02 | Threat model + mitigaciones aplicadas | ✅ Modelo + código (auth, zod, auditoría, rate-limit, roles) — ver `docs/seguridad/threat-model-lite.md` |
+| DEL-S3-03 | Presupuestos medidos con evidencia | ⚠️ JS ✅ (47KB gzip), LCP/INP pendientes de URL pública |
+| DEL-S3-04 | URL pública o artefacto reproducible | ✅ Artefacto reproducible (`docs/deploy/deploy.md`, compose de 3 servicios) + frontend |
 | DEL-S3-05 | Auditoría Sprint 3 | ✅ Este documento |
+
+## Addendum operativo 2026-09-25 (`feature/sprint3-operativo`)
+
+1. **Orden de rutas Express:** `/categoria/:categoria` y `/buscar/:termino`
+   estaban después de `/:id` y eran inalcanzables (Express matchea en orden).
+   **Corrección:** específicas antes de `/:id` en `productoRoutes.ts`.
+2. **`import.meta.env` sin tipos:** `tsc` del frontend fallaba (`Property 'env'`).
+   **Corrección:** `frontend/src/vite-env.d.ts` con `vite/client`.
+3. **Auth vs suite existente:** exigir JWT en escritura rompía los 10 tests de
+   integración (sin token). **Corrección:** bypass solo con `NODE_ENV=test`
+   (valor que fija Jest); en dev/prod la escritura exige bearer y la gestión
+   exige rol. Decisión documentada en threat model T-01/T-06.

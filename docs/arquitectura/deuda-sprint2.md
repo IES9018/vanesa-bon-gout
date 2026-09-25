@@ -34,6 +34,27 @@ No modifica decisiones de los ADR; registra el estado real y el plan de cierre.
   multi-etapa `backend/Dockerfile`), secretos por variables de entorno
   (`docker/.env.example` como plantilla, `.env` no versionado).
 
+## Cierre operativo — 2026-09-25 (`feature/sprint3-operativo`)
+
+- **DT-01 → cerrada:** `backend/src/db/` con `Pool` por `DATABASE_URL`
+  (`pool.ts`), repositorio async (`productoRepository.ts`) y migración
+  idempotente (`migrate.ts`, `npm run db:migrate`). Las rutas usan postgres
+  cuando está habilitado y seed en memoria en tests/CI. `/api/health` expone
+  `db: postgres|memoria`. Suite: 31/31 en verde.
+- **DT-02 → cerrada (MVP):** `frontend/` Vite + React con catálogo + checkout,
+  responsive <400px, targets ≥48px, `manifest` + `sw.js` (stale-while-revalidate
+  de `GET /api/productos*` según `offline-sync.md`). Build medido: JS
+  145KB / 47KB gzip (<200KB). Compose incluye servicio `frontend`.
+- **DT-04 → cerrada:** `middleware/auth.ts` (JWT + roles, `npm run token`),
+  `middleware/validate.ts` (zod en borde + paginación con topes),
+  `middleware/security.ts` (rate-limit 200/min + auditoría + cabeceras).
+  En `NODE_ENV=test` la auth se relaja para la suite; en cualquier otro
+  entorno la escritura exige bearer y la gestión exige `admin|empleado`.
+  Queda para producción horizontal: rate-limit en Redis y helmet completo.
+- **Pendiente real:** URL pública (paso documentado en `docs/deploy/deploy.md`,
+  falta cuenta/destino) y medición Lighthouse con la SPA desplegada
+  (presupuesto JS ya medido en build; LCP/INP se miden contra URL pública).
+
 ## DT-04: Seguridad web mínima (media, insumo TP4)
 
 - Sin auth en rutas, sin validación robusta de entradas (solo chequeos de

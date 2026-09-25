@@ -1,7 +1,6 @@
-# Stack local Bon Gout: postgres + backend.
-# El servicio `frontend` se agregará cuando exista la app React/Vite
-# (ver docs/arquitectura/deuda-sprint2.md). Sin secretos hardcodeados:
-# copiar `.env.example` a `.env` (no versionado) o exportar variables.
+# Stack local Bon Gout: postgres + backend + frontend.
+# Sin secretos hardcodeados: copiar `.env.example` a `.env` (no versionado)
+# o exportar variables. Ver docs/deploy/deploy.md.
 services:
   postgres:
     image: postgres:16
@@ -32,6 +31,17 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+    ports:
+      - "${FRONTEND_PORT:-5174}:80"
+    depends_on:
+      - backend
 
 volumes:
   pgdata:

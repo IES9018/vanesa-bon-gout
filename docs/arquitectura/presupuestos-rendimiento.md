@@ -23,5 +23,19 @@ model), diferir el checkout con `React.lazy` y comprimir imágenes a WebP.
 
 ## Estado actual
 
-La SPA aún no existe (DT-02); estos presupuestos son contrato previo (TP5) y se
-activan en CI con el primer commit del `frontend/`.
+~~La SPA aún no existe (DT-02); estos presupuestos son contrato previo (TP5) y se
+activan en CI con el primer commit del `frontend/`.~~
+
+Actualización 2026-09-25 (`feature/sprint3-operativo`): la SPA existe
+(`frontend/`). Medición de build local (Vite 5, React 18):
+
+| Métrica | Presupuesto | Medido | Estado |
+|---|---|---|---|
+| JS total (gzip) | < 200KB | 47KB (145KB raw) | ✅ |
+| LCP móvil 4G | < 2.5s | pendiente URL pública (Lighthouse CI) | ⚠️ |
+| INP | < 200ms | pendiente URL pública (Lighthouse CI) | ⚠️ |
+
+Palancas ya aplicadas: catálogo paginado (`?limit=20`), imágenes con
+`loading="lazy"`, SW con caché `GET /api/productos*` + tope implícito,
+sin dependencias pesadas (solo `react`/`react-dom`). LCP/INP se miden con
+Lighthouse CI contra la URL pública del Sprint 3.
