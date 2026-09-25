@@ -1,0 +1,9 @@
+{
+  "name": "Bon Gout",
+  "short_name": "BonGout",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff8f0",
+  "theme_color": "#8a4b1f",
+  "icons": []
+}

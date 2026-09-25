@@ -3,6 +3,22 @@
 Todos los cambios notables de este proyecto se documentan aquí, siguiendo
 [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [Unreleased] — Sprint 3 operativo (2026-09-25)
+
+### Agregado
+
+- PostgreSQL real cableado: `backend/src/db/` (`pool.ts`, `productoRepository.ts`,
+  `migrate.ts` con `npm run db:migrate`), rutas con fallback a seed en memoria
+  (tests/CI sin postgres siguen en verde), `/api/health` reporta `db`.
+- Seguridad STRIDE en código: JWT (`middleware/auth.ts` + `npm run token`),
+  roles `admin|empleado` (T-01/T-06), zod en borde (T-02), auditoría de estados
+  (T-03), paginación con topes + rate-limit 200/min (T-05), cabeceras mínimas.
+- Frontend SPA mínimo: `frontend/` (Vite + React, catálogo + checkout,
+  responsive <400px, targets ≥48px, `manifest` + `sw.js` stale-while-revalidate,
+  build 47KB gzip < 200KB), `frontend/Dockerfile` + servicio en compose.
+- Corrección: rutas `/categoria/:categoria` y `/buscar/:termino` ahora van
+  antes de `/:id` (antes eran inalcanzables).
+
 ## [0.1.0] - 2026-09-22
 
 Primera release del MVP: núcleo funcional + calidad + seguridad especificada.
