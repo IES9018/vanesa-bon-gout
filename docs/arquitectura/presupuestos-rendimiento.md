@@ -39,3 +39,11 @@ Palancas ya aplicadas: catálogo paginado (`?limit=20`), imágenes con
 `loading="lazy"`, SW con caché `GET /api/productos*` + tope implícito,
 sin dependencias pesadas (solo `react`/`react-dom`). LCP/INP se miden con
 Lighthouse CI contra la URL pública del Sprint 3.
+
+## Medición contra URL pública (Render, 2026-10-14)
+
+Procedimiento y plantilla de tabla en
+`docs/arquitectura/evidencia-lighthouse/README.md` (3 corridas Mobile 4G,
+2.º load como cifra válida + 1.er load como referencia del cold start del
+free tier). Tras el deploy: pegar la tabla aquí, marcar ✅/❌ vs LCP < 2.5s
+e INP < 200ms, y referenciar las capturas. JS se mantiene en 47KB gzip.

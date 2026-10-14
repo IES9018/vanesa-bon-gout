@@ -17,10 +17,19 @@ export function isDbEnabled(): boolean {
 export function getPool(): Pool | null {
   if (!isDbEnabled()) return null;
   if (!pool) {
+    const connectionString = process.env['DATABASE_URL'] as string;
+    // Render PostgreSQL exige SSL; en local (docker-compose) no.
+    // Se activa SSL solo si la URL es remota (render.com / sslmode=require
+    // / PGSSL=require) para no romper el stack local ni los tests.
+    const needsSSL =
+      /render\.com/i.test(connectionString) ||
+      /sslmode=require/i.test(connectionString) ||
+      process.env['PGSSL'] === 'require';
     pool = new Pool({
-      connectionString: process.env['DATABASE_URL'],
+      connectionString,
       max: 10,
       idleTimeoutMillis: 30000,
+      ...(needsSSL ? { ssl: { rejectUnauthorized: false } } : {}),
     });
     pool.on('error', (err) => {
       // No tumbar el proceso: se loguea y se sigue con fallback en memoria.

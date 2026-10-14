@@ -1,0 +1,58 @@
+# Blueprint Render — Bon Gout (postgres + backend + frontend).
+# Uso: Dashboard Render → New → Blueprint → conectar IES9018/vanesa-bon-gout.
+# No contiene secretos: JWT_SECRET se genera, DATABASE_URL la inyecta Render.
+# Ver docs/deploy/deploy.md (sección Render).
+services:
+  - type: web
+    name: bongout-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/index.js
+    # Migración idempotente antes de cada deploy (requiere DATABASE_URL).
+    preDeployCommand: npm run db:migrate
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bongout-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        fromService:
+          type: web
+          name: bongout-frontend
+          property: host
+          # Render entrega host sin esquema; el backend lo normaliza a https://.
+          # Ver backend/src/app.ts (CORS_ORIGIN admite host o URL completa).
+
+  - type: web
+    name: bongout-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: bongout-backend
+          property: host
+          # Vite lo consume en build time (frontend/src/api.ts usa
+          # import.meta.env.VITE_API_URL). Render lo expone como host;
+          # si llega sin esquema, el frontend lo normaliza a https://.
+          # Ver nota en docs/deploy/deploy.md si el build queda con http.
+
+databases:
+  - name: bongout-db
+    databaseName: bongout
+    user: bongout
+    # Plan free: 1GB, expira a los 30 días. Documentado como límite
+    # para la defensa (ver docs/deploy/deploy.md).

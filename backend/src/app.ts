@@ -12,7 +12,18 @@ dotenv.config();
 const app = express();
 
 app.use(securityHeaders);
-app.use(cors());
+// CORS restringible por entorno (Render: CORS_ORIGIN = host del frontend).
+// Acepta URL completa o host pelado (se normaliza a https://) y lista
+// separada por comas. Sin CORS_ORIGIN se mantiene abierto (local/dev).
+const rawOrigin = (process.env['CORS_ORIGIN'] || '').trim();
+const allowedOrigins = rawOrigin
+  .split(',')
+  .map((s) => s.trim().replace(/\/+$/, ''))
+  .filter(Boolean)
+  .map((s) => (/^https?:\/\//i.test(s) ? s : `https://${s}`));
+app.use(
+  allowedOrigins.length > 0 ? cors({ origin: allowedOrigins }) : cors()
+);
 app.use(express.json({ limit: '100kb' }));
 app.use(rateLimit(200));
 
