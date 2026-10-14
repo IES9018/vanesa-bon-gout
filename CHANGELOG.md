@@ -3,6 +3,21 @@
 Todos los cambios notables de este proyecto se documentan aquí, siguiendo
 [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [Unreleased] — Deploy Render (2026-10-14)
+
+### Agregado
+
+- Blueprint `render.yaml`: postgres + backend Node + frontend estático, sin
+  secretos versionados (`JWT_SECRET` generado, `DATABASE_URL` inyectada).
+  `preDeployCommand: npm run db:migrate` + healthcheck `/api/health`.
+- Compatibilidad Render en código: SSL solo para PG remota (`pool.ts`),
+  `CORS_ORIGIN` con normalización (`app.ts`), listen en `0.0.0.0`
+  (`index.ts`), `VITE_API_URL` pelado normalizado a `https://` (`api.ts`).
+- `frontend/nginx.conf`: fallback SPA + cache `/assets/*` (compose local).
+- `docs/deploy/deploy.md`: sección Render (pasos dashboard, verificación,
+  límites del free tier). Plantilla de evidencia en
+  `docs/arquitectura/evidencia-lighthouse/README.md`.
+
 ## [Unreleased] — Sprint 3 operativo (2026-09-25)
 
 ### Agregado

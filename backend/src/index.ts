@@ -3,8 +3,9 @@ import app from './app';
 
 dotenv.config();
 
-const PORT = process.env['PORT'] || 3001;
+const PORT = Number(process.env['PORT']) || 3001;
 
-app.listen(PORT, () => {
+// En Render (y Docker) el proceso debe escuchar en 0.0.0.0, no solo localhost.
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor Bon Gout corriendo en puerto ${PORT}`);
 });

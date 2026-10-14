@@ -55,3 +55,21 @@ incumplimiento oculto.
    integración (sin token). **Corrección:** bypass solo con `NODE_ENV=test`
    (valor que fija Jest); en dev/prod la escritura exige bearer y la gestión
    exige rol. Decisión documentada en threat model T-01/T-06.
+
+## Addendum deploy Render 2026-10-14 (`feature/deploy-render`)
+
+1. **Render entrega hosts sin esquema:** `fromService.host` llega pelado
+   (`xxx.onrender.com`). **Corrección:** normalización a `https://` en
+   `backend/src/app.ts` (`CORS_ORIGIN`) y `frontend/src/api.ts`
+   (`VITE_API_URL`), con tolerancia a lista con comas y barra final.
+2. **Postgres de Render exige SSL y el pool local no lo usaba.**
+   **Corrección:** `ssl: { rejectUnauthorized: false }` solo si la URL es
+   remota (`render.com`/`sslmode=require`/`PGSSL=require`); local y tests
+   sin cambios.
+3. **El backend escuchaba solo en localhost implícito.** **Corrección:**
+   `app.listen(PORT, '0.0.0.0')` + `PORT` numérico (Render inyecta 10000).
+4. **Nginx local sin fallback SPA:** recargar en ruta inexistente daba 404.
+   **Corrección:** `frontend/nginx.conf` con `try_files ... /index.html`
+   (en Render el rewrite vive en `render.yaml`).
+5. **LCP/INP siguen pendientes** hasta el Apply del Blueprint; procedimiento
+   y plantilla en `docs/arquitectura/evidencia-lighthouse/README.md`.

@@ -9,7 +9,15 @@ export interface Producto {
   stock: number;
 }
 
-const BASE = import.meta.env.VITE_API_URL || '';
+// Render inyecta VITE_API_URL como host pelado (sin esquema) en el build.
+// Se normaliza a https:// y se quita la barra final. Sin valor => '' (mismo
+// origen, útil en dev con el proxy de Vite).
+const RAW_BASE = (import.meta.env.VITE_API_URL as string | undefined) || '';
+const BASE = RAW_BASE
+  ? (/^https?:\/\//i.test(RAW_BASE.trim())
+      ? RAW_BASE.trim().replace(/\/+$/, '')
+      : `https://${RAW_BASE.trim().replace(/\/+$/, '')}`)
+  : '';
 
 export async function listarProductos(): Promise<Producto[]> {
   // Paginado en servidor (T-05): 20 ítems por defecto.
