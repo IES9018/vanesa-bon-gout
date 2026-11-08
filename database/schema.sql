@@ -57,3 +57,14 @@ CREATE TABLE IF NOT EXISTS inventario (
     unidad_medida VARCHAR(20) NOT NULL,
     punto_reorden DECIMAL(10,2) DEFAULT 0
 );
+
+-- RF-06: movimientos auditables de inventario (entrada / salida / ajuste).
+CREATE TABLE IF NOT EXISTS movimientos_inventario (
+    id SERIAL PRIMARY KEY,
+    inventario_id INTEGER REFERENCES inventario(id) ON DELETE CASCADE,
+    tipo VARCHAR(10) NOT NULL CHECK (tipo IN ('entrada', 'salida', 'ajuste')),
+    cantidad DECIMAL(10,2) NOT NULL,
+    motivo VARCHAR(200) NOT NULL,
+    pedido_id INTEGER REFERENCES pedidos(id),
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

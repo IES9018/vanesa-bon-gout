@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import productoRoutes from './routes/productoRoutes';
 import carritoRoutes from './routes/carritoRoutes';
 import pedidoRoutes from './routes/pedidoRoutes';
+import inventarioRoutes from './routes/inventarioRoutes';
 import { securityHeaders, rateLimit } from './middleware/security';
 import { dbHealth } from './db/pool';
 
@@ -30,6 +31,7 @@ app.use(rateLimit(200));
 app.use('/api/productos', productoRoutes);
 app.use('/api/carrito', carritoRoutes);
 app.use('/api/pedidos', pedidoRoutes);
+app.use('/api/inventario', inventarioRoutes);
 
 app.get('/api/health', (_req, res) => {
   void dbHealth().then((db) => {

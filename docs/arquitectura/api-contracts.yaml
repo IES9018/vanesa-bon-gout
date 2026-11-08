@@ -128,6 +128,62 @@ paths:
           $ref: '#/components/responses/Error404'
         '500':
           $ref: '#/components/responses/Error500'
+  /api/inventario:
+    get:
+      summary: Listar inventario de ingredientes (admin/empleado)
+      operationId: listarInventario
+      parameters:
+        - name: soloAlertas
+          in: query
+          required: false
+          description: Si es true, devuelve solo los ingredientes bajo el punto de reorden
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Inventario actual
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InventarioItem'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/inventario/{id}/movimientos:
+    post:
+      summary: Registrar entrada, salida o ajuste de stock (admin/empleado)
+      operationId: registrarMovimiento
+      parameters:
+        - $ref: '#/components/parameters/InventarioId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearMovimiento'
+      responses:
+        '201':
+          description: Movimiento registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MovimientoInventario'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
 components:
   securitySchemes:
     bearerAuth:
@@ -144,6 +200,13 @@ components:
         type: integer
         minimum: 1
     PedidoId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    InventarioId:
       name: id
       in: path
       required: true
@@ -284,6 +347,87 @@ components:
       properties:
         message:
           type: string
+    InventarioItem:
+      type: object
+      required:
+        - id
+        - nombreIngrediente
+        - cantidadDisponible
+        - unidadMedida
+        - puntoReorden
+        - requiereReposicion
+      properties:
+        id:
+          type: integer
+        nombreIngrediente:
+          type: string
+          maxLength: 100
+        cantidadDisponible:
+          type: number
+          minimum: 0
+        unidadMedida:
+          type: string
+          maxLength: 20
+        puntoReorden:
+          type: number
+          minimum: 0
+        requiereReposicion:
+          type: boolean
+          description: true cuando cantidadDisponible <= puntoReorden
+    MovimientoInventario:
+      type: object
+      required:
+        - id
+        - inventarioId
+        - tipo
+        - cantidad
+        - motivo
+        - creadoEn
+      properties:
+        id:
+          type: integer
+        inventarioId:
+          type: integer
+        tipo:
+          type: string
+          enum:
+            - entrada
+            - salida
+            - ajuste
+        cantidad:
+          type: number
+          minimum: 0
+        motivo:
+          type: string
+          maxLength: 200
+        pedidoId:
+          type: integer
+          nullable: true
+        creadoEn:
+          type: string
+          format: date-time
+    CrearMovimiento:
+      type: object
+      required:
+        - tipo
+        - cantidad
+        - motivo
+      properties:
+        tipo:
+          type: string
+          enum:
+            - entrada
+            - salida
+            - ajuste
+        cantidad:
+          type: number
+          minimum: 0
+        motivo:
+          type: string
+          maxLength: 200
+        pedidoId:
+          type: integer
+          nullable: true
     Error:
       type: object
       required:
@@ -300,6 +444,12 @@ components:
             $ref: '#/components/schemas/Error'
     Error401:
       description: No autenticado (falta JWT o inválido)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error403:
+      description: Prohibido (rol insuficiente)
       content:
         application/json:
           schema:

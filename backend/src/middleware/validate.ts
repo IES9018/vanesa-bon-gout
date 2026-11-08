@@ -46,6 +46,14 @@ export const cambiarEstadoSchema = z.object({
   estado: z.enum(['pendiente', 'en_produccion', 'en_entrega', 'entregado', 'cancelado']),
 });
 
+// RF-06: movimiento de inventario validado en el borde (T-02).
+export const movimientoInventarioSchema = z.object({
+  tipo: z.enum(['entrada', 'salida', 'ajuste']),
+  cantidad: z.number().min(0).max(1000000),
+  motivo: z.string().min(1).max(200),
+  pedidoId: z.number().int().min(1).nullable().optional(),
+});
+
 export function parseId(value: unknown): number | null {
   const n = typeof value === 'string' ? parseInt(value, 10) : NaN;
   if (!Number.isInteger(n) || n < 1 || n > 1000000) return null;
