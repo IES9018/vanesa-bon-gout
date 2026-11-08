@@ -54,6 +54,14 @@ export const movimientoInventarioSchema = z.object({
   pedidoId: z.number().int().min(1).nullable().optional(),
 });
 
+// RF-05: reserva de un slot publicado (CA-12/CA-13).
+export const crearReservaSchema = z.object({
+  fecha: z.string().min(10).max(40),
+  tipo: z.enum(['entrega', 'consulta']),
+  // Solo se usa en NODE_ENV=test, donde no hay JWT real.
+  clienteId: z.number().int().min(1).optional(),
+});
+
 // RF-04: pago en sandbox (CA-09/CA-10). El monto no se acepta del cliente.
 export const crearPagoSchema = z.object({
   metodo: z.enum(['mercadopago', 'transferencia']),
