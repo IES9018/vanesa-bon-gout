@@ -80,6 +80,23 @@ export interface CrearMovimientoDTO {
   pedidoId?: number | null;
 }
 
+// --- RF-04 Pagos (SPEC v6, NG-08: sandbox) ---
+
+export interface Pago {
+  id: number;
+  pedidoId: number;
+  metodo: 'mercadopago' | 'transferencia';
+  estado: 'pendiente' | 'aprobado' | 'rechazado' | 'reembolsado';
+  monto: number;
+  referenciaExterna: string | null;
+  creadoEn: Date;
+}
+
+export interface CrearPagoDTO {
+  metodo: 'mercadopago' | 'transferencia';
+  referenciaComprobante?: string;
+}
+
 // --- RF-07 Testimonios (SPEC v6) ---
 
 export interface Testimonio {

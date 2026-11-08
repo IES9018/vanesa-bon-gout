@@ -255,4 +255,85 @@ describe('API Bon Gout (integración)', () => {
       .send({ estado: 'aprobado' });
     expect(res.status).toBe(404);
   });
+
+  // --- RF-04 Pagos (SPEC v6, NG-08 sandbox) ---
+  async function crearPedidoPendienteHttp(clienteId: number): Promise<{ id: number; total: number }> {
+    await request(app)
+      .post(`/api/carrito/${clienteId}/agregar`)
+      .send({ productoId: 1, cantidad: 1 });
+    const creado = await request(app).post('/api/pedidos').send({
+      clienteId,
+      fechaEntrega: new Date(Date.now() + 72 * 3600 * 1000).toISOString(),
+      metodoPago: 'mercadopago',
+      observaciones: '',
+      items: [{ productoId: 1, cantidad: 1, personalizaciones: '' }],
+    });
+    expect(creado.status).toBe(201);
+    return { id: creado.body.id as number, total: creado.body.total as number };
+  }
+
+  it('POST /api/pedidos/:id/pagos crea un pago sandbox (201)', async () => {
+    const pedido = await crearPedidoPendienteHttp(110);
+    const res = await request(app)
+      .post(`/api/pedidos/${pedido.id}/pagos`)
+      .send({ metodo: 'mercadopago' });
+    expect(res.status).toBe(201);
+    expect(res.body.estado).toBe('pendiente');
+    expect(res.body.monto).toBe(pedido.total);
+    expect(res.body.referenciaExterna).toMatch(/^MP-SANDBOX-/);
+  });
+
+  it('POST /api/pedidos/:id/pagos exige comprobante para transferencia', async () => {
+    const pedido = await crearPedidoPendienteHttp(111);
+    const res = await request(app)
+      .post(`/api/pedidos/${pedido.id}/pagos`)
+      .send({ metodo: 'transferencia' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/comprobante/i);
+  });
+
+  it('POST /api/pedidos/:id/pagos devuelve 404 si el pedido no existe', async () => {
+    const res = await request(app)
+      .post('/api/pedidos/9999/pagos')
+      .send({ metodo: 'mercadopago' });
+    expect(res.status).toBe(404);
+  });
+
+  it('POST /api/pagos/:id/confirmar aprueba el pago (CA-09)', async () => {
+    const pedido = await crearPedidoPendienteHttp(112);
+    const creado = await request(app)
+      .post(`/api/pedidos/${pedido.id}/pagos`)
+      .send({ metodo: 'mercadopago' });
+    expect(creado.status).toBe(201);
+
+    const res = await request(app)
+      .post(`/api/pagos/${creado.body.id}/confirmar`)
+      .send({ aprobado: true });
+    expect(res.status).toBe(200);
+    expect(res.body.estado).toBe('aprobado');
+  });
+
+  it('POST /api/pagos/:id/confirmar rechaza el pago y el pedido sigue pendiente (CA-11)', async () => {
+    const pedido = await crearPedidoPendienteHttp(113);
+    const creado = await request(app)
+      .post(`/api/pedidos/${pedido.id}/pagos`)
+      .send({ metodo: 'transferencia', referenciaComprobante: 'TRF-999' });
+    expect(creado.status).toBe(201);
+
+    const res = await request(app)
+      .post(`/api/pagos/${creado.body.id}/confirmar`)
+      .send({ aprobado: false, motivo: 'Comprobante ilegible' });
+    expect(res.status).toBe(200);
+    expect(res.body.estado).toBe('rechazado');
+
+    const pedidoActual = await request(app).get(`/api/pedidos/${pedido.id}`);
+    expect(pedidoActual.body.estado).toBe('pendiente');
+  });
+
+  it('POST /api/pagos/:id/confirmar devuelve 404 si no existe', async () => {
+    const res = await request(app)
+      .post('/api/pagos/9999/confirmar')
+      .send({ aprobado: true });
+    expect(res.status).toBe(404);
+  });
 });
