@@ -54,6 +54,17 @@ export const movimientoInventarioSchema = z.object({
   pedidoId: z.number().int().min(1).nullable().optional(),
 });
 
+// RF-04: pago en sandbox (CA-09/CA-10). El monto no se acepta del cliente.
+export const crearPagoSchema = z.object({
+  metodo: z.enum(['mercadopago', 'transferencia']),
+  referenciaComprobante: z.string().min(1).max(100).optional(),
+});
+
+export const confirmarPagoSchema = z.object({
+  aprobado: z.boolean(),
+  motivo: z.string().max(200).optional(),
+});
+
 // RF-07: testimonio y moderación (CA-18..CA-20).
 export const crearTestimonioSchema = z.object({
   comentario: z.string().min(5).max(500),

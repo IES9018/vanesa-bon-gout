@@ -79,3 +79,14 @@ CREATE TABLE IF NOT EXISTS testimonios (
     estado VARCHAR(10) DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'aprobado', 'rechazado')),
     creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- RF-04: pagos en modo sandbox (MercadoPago simulado o transferencia).
+CREATE TABLE IF NOT EXISTS pagos (
+    id SERIAL PRIMARY KEY,
+    pedido_id INTEGER REFERENCES pedidos(id) ON DELETE CASCADE,
+    metodo VARCHAR(20) NOT NULL CHECK (metodo IN ('mercadopago', 'transferencia')),
+    estado VARCHAR(20) DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'aprobado', 'rechazado', 'reembolsado')),
+    monto DECIMAL(10,2) NOT NULL,
+    referencia_externa VARCHAR(100),
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

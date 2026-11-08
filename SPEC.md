@@ -22,7 +22,7 @@ El objetivo general del proyecto es proveer una plataforma de **e-commerce y ges
 - [x] **RF-01:** Sistema de catálogo de productos con imágenes, descripciones, precios y opciones de personalización. *(Implementado: `productoRoutes` + 9 tests + 3 de integración.)*
 - [x] **RF-02:** Carrito de compras para agregar, modificar y eliminar productos. *(Implementado: `carritoRoutes` + 8 tests + 2 de integración.)*
 - [x] **RF-03:** Sistema de pedidos online, desde la selección hasta la confirmación del pedido. *(Implementado: `pedidoRoutes` + 4 tests + 5 de integración.)*
-- [ ] **RF-04:** Gestión de pagos digitales mediante integración con MercadoPago y transferencias bancarias. *(Criterios en §6.4 — pago en sandbox/mock, ver NG-08.)*
+- [x] **RF-04:** Gestión de pagos digitales mediante integración con MercadoPago y transferencias bancarias. *(Implementado en modo sandbox (NG-08): `POST /api/pedidos/{id}/pagos` + `POST /api/pagos/{id}/confirmar` + `pagoRepository`, ADR-007, 10 tests unitarios + 6 de integración; criterios en §6.4.)*
 - [ ] **RF-05:** Sistema de reservas/citas para programación de entregas y consultas presenciales. *(Criterios en §6.5.)*
 - [x] **RF-06:** Gestión de inventario con control de stock de ingredientes y productos terminados. *(Implementado: `inventarioRoutes` + `inventarioService` + repositorio PG con transacción `FOR UPDATE`, 10 tests unitarios + 6 de integración; criterios en §6.6.)*
 - [x] **RF-07:** Sistema de testimonios con gestión de comentarios y calificaciones de clientes. *(Implementado: `testimonioRoutes` (`GET /api/testimonios`, `PATCH /api/testimonios/{id}`) + `POST /api/pedidos/{id}/testimonios` + `testimonioRepository`, moderación previa y 1 por pedido (CA-20), 8 tests unitarios + 6 de integración; criterios en §6.7.)*
@@ -319,7 +319,7 @@ Las decisiones arquitectónicas del sistema están documentadas en la carpeta `d
 | ADR-004 | Stack de UI (Tailwind CSS + Headless UI) | `docs/adr/ADR-004-stack-ui.md` |
 | ADR-005 | Estrategia web (SPA React + Vite contra API REST) | `docs/adr/ADR-005-estrategia-web.md` |
 | ADR-006 | Estrategia mobile (responsive + PWA) | `docs/adr/ADR-006-estrategia-mobile.md` |
-| ADR-007 | Integración de pagos (adapter MercadoPago sandbox + transferencia) | `docs/adr/ADR-007-integracion-pagos.md` *(a crear en RF-04)* |
+| ADR-007 | Integración de pagos (adapter MercadoPago sandbox + transferencia) | `docs/adr/ADR-007-integracion-pagos.md` |
 | ADR-008 | Notificaciones (outbox + adapter email/WhatsApp) | `docs/adr/ADR-008-notificaciones.md` *(a crear en RF-08)* |
 
 Restricciones derivadas de estas decisiones:
