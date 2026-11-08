@@ -155,6 +155,23 @@ paths:
           $ref: '#/components/responses/Error403'
         '500':
           $ref: '#/components/responses/Error500'
+  /api/dashboard/metricas:
+    get:
+      summary: Obtener métricas del negocio (solo admin)
+      operationId: obtenerMetricas
+      responses:
+        '200':
+          description: Métricas de ventas, pedidos por estado y alertas de inventario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricasDashboard'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '500':
+          $ref: '#/components/responses/Error500'
   /api/inventario/{id}/movimientos:
     post:
       summary: Registrar entrada, salida o ajuste de stock (admin/empleado)
@@ -428,6 +445,78 @@ components:
         pedidoId:
           type: integer
           nullable: true
+    MetricasDashboard:
+      type: object
+      required:
+        - ventas
+        - pedidosPorEstado
+        - alertasInventario
+        - totalPedidos
+      properties:
+        ventas:
+          type: object
+          required:
+            - dia
+            - semana
+            - mes
+          properties:
+            dia:
+              type: number
+              minimum: 0
+            semana:
+              type: number
+              minimum: 0
+            mes:
+              type: number
+              minimum: 0
+        pedidosPorEstado:
+          type: object
+          required:
+            - pendiente
+            - en_produccion
+            - en_entrega
+            - entregado
+            - cancelado
+          properties:
+            pendiente:
+              type: integer
+              minimum: 0
+            en_produccion:
+              type: integer
+              minimum: 0
+            en_entrega:
+              type: integer
+              minimum: 0
+            entregado:
+              type: integer
+              minimum: 0
+            cancelado:
+              type: integer
+              minimum: 0
+        alertasInventario:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - nombreIngrediente
+              - cantidadDisponible
+              - unidadMedida
+              - puntoReorden
+            properties:
+              id:
+                type: integer
+              nombreIngrediente:
+                type: string
+              cantidadDisponible:
+                type: number
+              unidadMedida:
+                type: string
+              puntoReorden:
+                type: number
+        totalPedidos:
+          type: integer
+          minimum: 0
     Error:
       type: object
       required:

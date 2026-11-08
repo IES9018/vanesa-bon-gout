@@ -72,7 +72,7 @@ router.patch(
 
     const result = pedidoService.cambiarEstado(id, estado);
     if (!result.success) {
-      res.status(404).json({ error: result.message });
+      res.status(result.code === 'not_found' ? 404 : 400).json({ error: result.message });
       return;
     }
 

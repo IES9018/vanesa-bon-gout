@@ -27,7 +27,7 @@ El objetivo general del proyecto es proveer una plataforma de **e-commerce y ges
 - [x] **RF-06:** Gestión de inventario con control de stock de ingredientes y productos terminados. *(Implementado: `inventarioRoutes` + `inventarioService` + repositorio PG con transacción `FOR UPDATE`, 10 tests unitarios + 6 de integración; criterios en §6.6.)*
 - [ ] **RF-07:** Sistema de testimonios con gestión de comentarios y calificaciones de clientes. *(Criterios en §6.7.)*
 - [ ] **RF-08:** Notificaciones automáticas por WhatsApp y email para confirmaciones y recordatorios. *(Criterios en §6.8 — adapter con cola simulada, ver NG-09.)*
-- [ ] **RF-09:** Dashboard administrativo con métricas y gestión del negocio. *(Criterios en §6.9.)*
+- [x] **RF-09:** Dashboard administrativo con métricas y gestión del negocio. *(Implementado: `dashboardRoutes` (`GET /api/dashboard/metricas`) + `dashboardService` + ciclo de vida validado en `pedidoService` (CA-25), 7 tests unitarios + 2 de integración; criterios en §6.9.)*
 - [ ] **RF-10:** Programa de fidelización de puntos y recompensas para clientes frecuentes.
 
 ## 3. Non-Goals (Límites del Alcance)
