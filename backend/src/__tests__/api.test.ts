@@ -336,4 +336,64 @@ describe('API Bon Gout (integración)', () => {
       .send({ aprobado: true });
     expect(res.status).toBe(404);
   });
+
+  // --- RF-05 Reservas (SPEC v6) ---
+  async function primerSlotHttp(): Promise<string> {
+    const res = await request(app).get('/api/reservas/disponibilidad');
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBeGreaterThan(0);
+    return res.body[0].fecha as string;
+  }
+
+  it('GET /api/reservas/disponibilidad publica la grilla de slots', async () => {
+    const res = await request(app).get('/api/reservas/disponibilidad');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0].cupoTotal).toBe(2);
+    expect(res.body[0].cupoDisponible).toBe(2);
+  });
+
+  it('GET /api/reservas/disponibilidad rechaza una fecha inválida', async () => {
+    const res = await request(app).get('/api/reservas/disponibilidad?fecha=no-es-fecha');
+    expect(res.status).toBe(400);
+  });
+
+  it('POST /api/reservas confirma una reserva (201)', async () => {
+    const fecha = await primerSlotHttp();
+    const res = await request(app)
+      .post('/api/reservas')
+      .send({ fecha, tipo: 'entrega', clienteId: 210 });
+    expect(res.status).toBe(201);
+    expect(res.body.estado).toBe('confirmada');
+    expect(res.body.clienteId).toBe(210);
+  });
+
+  it('POST /api/reservas rechaza una fecha pasada (CA-13)', async () => {
+    const res = await request(app)
+      .post('/api/reservas')
+      .send({
+        fecha: new Date(Date.now() - 3600 * 1000).toISOString(),
+        tipo: 'entrega',
+        clienteId: 211,
+      });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/futura/i);
+  });
+
+  it('DELETE /api/reservas/:id cancela y libera el cupo (CA-14)', async () => {
+    const fecha = await primerSlotHttp();
+    const creada = await request(app)
+      .post('/api/reservas')
+      .send({ fecha, tipo: 'consulta', clienteId: 212 });
+    expect(creada.status).toBe(201);
+
+    const res = await request(app).delete(`/api/reservas/${creada.body.id}`);
+    expect(res.status).toBe(200);
+    expect(res.body.estado).toBe('cancelada');
+  });
+
+  it('DELETE /api/reservas/:id devuelve 404 si no existe', async () => {
+    const res = await request(app).delete('/api/reservas/9999');
+    expect(res.status).toBe(404);
+  });
 });

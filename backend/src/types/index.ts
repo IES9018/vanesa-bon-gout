@@ -80,6 +80,27 @@ export interface CrearMovimientoDTO {
   pedidoId?: number | null;
 }
 
+// --- RF-05 Reservas (SPEC v6) ---
+
+export interface Reserva {
+  id: number;
+  clienteId: number;
+  fecha: Date;
+  tipo: 'entrega' | 'consulta';
+  estado: 'pendiente' | 'confirmada' | 'cancelada';
+}
+
+export interface CrearReservaDTO {
+  fecha: string;
+  tipo: 'entrega' | 'consulta';
+}
+
+export interface SlotDisponibilidad {
+  fecha: Date;
+  cupoTotal: number;
+  cupoDisponible: number;
+}
+
 // --- RF-04 Pagos (SPEC v6, NG-08: sandbox) ---
 
 export interface Pago {

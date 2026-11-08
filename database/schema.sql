@@ -90,3 +90,13 @@ CREATE TABLE IF NOT EXISTS pagos (
     referencia_externa VARCHAR(100),
     creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- RF-05: reservas de entregas y consultas (cupo por slot en la capa de servicio).
+CREATE TABLE IF NOT EXISTS reservas (
+    id SERIAL PRIMARY KEY,
+    cliente_id INTEGER REFERENCES clientes(id),
+    fecha TIMESTAMP NOT NULL,
+    tipo VARCHAR(10) NOT NULL CHECK (tipo IN ('entrega', 'consulta')),
+    estado VARCHAR(10) DEFAULT 'confirmada' CHECK (estado IN ('pendiente', 'confirmada', 'cancelada')),
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

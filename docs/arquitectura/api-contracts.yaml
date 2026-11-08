@@ -128,6 +128,76 @@ paths:
           $ref: '#/components/responses/Error404'
         '500':
           $ref: '#/components/responses/Error500'
+  /api/reservas/disponibilidad:
+    get:
+      summary: Consultar slots de reserva disponibles (público)
+      operationId: consultarDisponibilidad
+      security: []
+      parameters:
+        - name: fecha
+          in: query
+          required: false
+          description: Fecha en formato YYYY-MM-DD; sin valor devuelve los próximos 7 días
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Slots con cupo disponible
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SlotDisponibilidad'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/reservas:
+    post:
+      summary: Reservar un slot de entrega o consulta
+      operationId: crearReserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearReserva'
+      responses:
+        '201':
+          description: Reserva confirmada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reserva'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/reservas/{id}:
+    delete:
+      summary: Cancelar una reserva confirmada (mínimo 24 h de anticipación)
+      operationId: cancelarReserva
+      parameters:
+        - $ref: '#/components/parameters/ReservaId'
+      responses:
+        '200':
+          description: Reserva cancelada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reserva'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
   /api/pedidos/{id}/pagos:
     post:
       summary: Crear un pago para un pedido (sandbox)
@@ -365,6 +435,13 @@ components:
       schema:
         type: integer
         minimum: 1
+    ReservaId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
     TestimonioId:
       name: id
       in: path
@@ -587,6 +664,64 @@ components:
         pedidoId:
           type: integer
           nullable: true
+    Reserva:
+      type: object
+      required:
+        - id
+        - clienteId
+        - fecha
+        - tipo
+        - estado
+      properties:
+        id:
+          type: integer
+        clienteId:
+          type: integer
+        fecha:
+          type: string
+          format: date-time
+        tipo:
+          type: string
+          enum:
+            - entrega
+            - consulta
+        estado:
+          type: string
+          enum:
+            - pendiente
+            - confirmada
+            - cancelada
+    CrearReserva:
+      type: object
+      required:
+        - fecha
+        - tipo
+      properties:
+        fecha:
+          type: string
+          format: date-time
+          description: Debe coincidir con un slot publicado en /api/reservas/disponibilidad
+        tipo:
+          type: string
+          enum:
+            - entrega
+            - consulta
+    SlotDisponibilidad:
+      type: object
+      required:
+        - fecha
+        - cupoTotal
+        - cupoDisponible
+      properties:
+        fecha:
+          type: string
+          format: date-time
+        cupoTotal:
+          type: integer
+          minimum: 0
+        cupoDisponible:
+          type: integer
+          minimum: 0
     Pago:
       type: object
       required:
