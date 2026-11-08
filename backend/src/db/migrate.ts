@@ -30,6 +30,20 @@ async function main(): Promise<void> {
         ('Facturas x6','Media docena de facturas surtidas',1800,'Facturas','/img/facturas-x6.jpg',false,0)`
       );
     }
+
+    // RF-06: seed de inventario (mismos ingredientes que inventarioService).
+    const inv = await pool.query('SELECT COUNT(*)::int AS n FROM inventario');
+    if (inv.rows[0].n === 0) {
+      await pool.query(
+        `INSERT INTO inventario (nombre_ingrediente, cantidad_disponible, unidad_medida, punto_reorden) VALUES
+        ('Harina 0000',25,'kg',10),
+        ('Azúcar',18,'kg',8),
+        ('Chocolate amargo',4,'kg',5),
+        ('Manteca',6,'kg',4),
+        ('Huevos',30,'unidades',24),
+        ('Crema de leche',2,'litros',3)`
+      );
+    }
     console.log('Migración OK: schema aplicado + seed verificado');
   } finally {
     await pool.end();

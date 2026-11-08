@@ -24,7 +24,7 @@ El objetivo general del proyecto es proveer una plataforma de **e-commerce y ges
 - [x] **RF-03:** Sistema de pedidos online, desde la selección hasta la confirmación del pedido. *(Implementado: `pedidoRoutes` + 4 tests + 5 de integración.)*
 - [ ] **RF-04:** Gestión de pagos digitales mediante integración con MercadoPago y transferencias bancarias. *(Criterios en §6.4 — pago en sandbox/mock, ver NG-08.)*
 - [ ] **RF-05:** Sistema de reservas/citas para programación de entregas y consultas presenciales. *(Criterios en §6.5.)*
-- [ ] **RF-06:** Gestión de inventario con control de stock de ingredientes y productos terminados. *(Criterios en §6.6.)*
+- [x] **RF-06:** Gestión de inventario con control de stock de ingredientes y productos terminados. *(Implementado: `inventarioRoutes` + `inventarioService` + repositorio PG con transacción `FOR UPDATE`, 10 tests unitarios + 6 de integración; criterios en §6.6.)*
 - [ ] **RF-07:** Sistema de testimonios con gestión de comentarios y calificaciones de clientes. *(Criterios en §6.7.)*
 - [ ] **RF-08:** Notificaciones automáticas por WhatsApp y email para confirmaciones y recordatorios. *(Criterios en §6.8 — adapter con cola simulada, ver NG-09.)*
 - [ ] **RF-09:** Dashboard administrativo con métricas y gestión del negocio. *(Criterios en §6.9.)*

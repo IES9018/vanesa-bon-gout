@@ -51,3 +51,31 @@ export interface CrearPedidoDTO {
   observaciones: string;
   items: CarritoItem[];
 }
+
+// --- RF-06 Inventario (SPEC v6) ---
+
+export interface Inventario {
+  id: number;
+  nombreIngrediente: string;
+  cantidadDisponible: number;
+  unidadMedida: string;
+  puntoReorden: number;
+  requiereReposicion: boolean;
+}
+
+export interface MovimientoInventario {
+  id: number;
+  inventarioId: number;
+  tipo: 'entrada' | 'salida' | 'ajuste';
+  cantidad: number;
+  motivo: string;
+  pedidoId: number | null;
+  creadoEn: Date;
+}
+
+export interface CrearMovimientoDTO {
+  tipo: 'entrada' | 'salida' | 'ajuste';
+  cantidad: number;
+  motivo: string;
+  pedidoId?: number | null;
+}

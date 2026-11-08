@@ -93,4 +93,46 @@ describe('API Bon Gout (integración)', () => {
       .send({ estado: 'en_produccion' });
     expect(res.status).toBe(404);
   });
+
+  // --- RF-06 Inventario (SPEC v6) ---
+  it('GET /api/inventario lista los ingredientes', async () => {
+    const res = await request(app).get('/api/inventario');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+  });
+
+  it('GET /api/inventario?soloAlertas=true filtra los que requieren reposición', async () => {
+    const res = await request(app).get('/api/inventario?soloAlertas=true');
+    expect(res.status).toBe(200);
+    expect(res.body.every((i: { requiereReposicion: boolean }) => i.requiereReposicion)).toBe(true);
+  });
+
+  it('POST /api/inventario/:id/movimientos valida el body', async () => {
+    const res = await request(app).post('/api/inventario/1/movimientos').send({ tipo: 'salida' });
+    expect(res.status).toBe(400);
+  });
+
+  it('POST /api/inventario/:id/movimientos registra una entrada (201)', async () => {
+    const res = await request(app)
+      .post('/api/inventario/1/movimientos')
+      .send({ tipo: 'entrada', cantidad: 2, motivo: 'Compra de prueba' });
+    expect(res.status).toBe(201);
+    expect(res.body.tipo).toBe('entrada');
+  });
+
+  it('POST /api/inventario/:id/movimientos rechaza salida sin stock', async () => {
+    const res = await request(app)
+      .post('/api/inventario/6/movimientos')
+      .send({ tipo: 'salida', cantidad: 999, motivo: 'Producción' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/stock insuficiente/i);
+  });
+
+  it('POST /api/inventario/:id/movimientos devuelve 404 si el ingrediente no existe', async () => {
+    const res = await request(app)
+      .post('/api/inventario/9999/movimientos')
+      .send({ tipo: 'entrada', cantidad: 1, motivo: 'Compra' });
+    expect(res.status).toBe(404);
+  });
 });
