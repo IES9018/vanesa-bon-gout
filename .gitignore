@@ -1,3 +1,7 @@
+# Documents / Raw files
+*.pdf
+*.docx
+
 # Python
 __pycache__/
 *.py[cod]
