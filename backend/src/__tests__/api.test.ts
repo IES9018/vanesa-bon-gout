@@ -165,4 +165,94 @@ describe('API Bon Gout (integración)', () => {
     expect(salto.status).toBe(400);
     expect(salto.body.error).toMatch(/transición inválida/i);
   });
+
+  // --- RF-07 Testimonios (SPEC v6) ---
+  async function crearPedidoEntregadoHttp(clienteId: number): Promise<number> {
+    await request(app)
+      .post(`/api/carrito/${clienteId}/agregar`)
+      .send({ productoId: 1, cantidad: 1 });
+    const creado = await request(app).post('/api/pedidos').send({
+      clienteId,
+      fechaEntrega: new Date(Date.now() + 72 * 3600 * 1000).toISOString(),
+      metodoPago: 'mercadopago',
+      observaciones: '',
+      items: [{ productoId: 1, cantidad: 1, personalizaciones: '' }],
+    });
+    expect(creado.status).toBe(201);
+    const id = creado.body.id as number;
+    for (const estado of ['en_produccion', 'en_entrega', 'entregado']) {
+      const r = await request(app).patch(`/api/pedidos/${id}/estado`).send({ estado });
+      expect(r.status).toBe(200);
+    }
+    return id;
+  }
+
+  it('GET /api/testimonios devuelve solo los aprobados', async () => {
+    const res = await request(app).get('/api/testimonios');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.every((t: { estado: string }) => t.estado === 'aprobado')).toBe(true);
+  });
+
+  it('POST /api/pedidos/:id/testimonios valida el body', async () => {
+    const pedidoId = await crearPedidoEntregadoHttp(105);
+    const res = await request(app)
+      .post(`/api/pedidos/${pedidoId}/testimonios`)
+      .send({ comentario: 'ok', calificacion: 9 });
+    expect(res.status).toBe(400);
+  });
+
+  it('POST /api/pedidos/:id/testimonios rechaza pedidos no entregados (CA-18)', async () => {
+    await request(app)
+      .post('/api/carrito/106/agregar')
+      .send({ productoId: 1, cantidad: 1 });
+    const creado = await request(app).post('/api/pedidos').send({
+      clienteId: 106,
+      fechaEntrega: new Date(Date.now() + 72 * 3600 * 1000).toISOString(),
+      metodoPago: 'mercadopago',
+      observaciones: '',
+      items: [{ productoId: 1, cantidad: 1, personalizaciones: '' }],
+    });
+    const res = await request(app)
+      .post(`/api/pedidos/${creado.body.id}/testimonios`)
+      .send({ comentario: 'Todavía no lo recibí', calificacion: 3 });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/entregado/i);
+  });
+
+  it('POST /api/pedidos/:id/testimonios crea el testimonio (201) y no admite duplicados (CA-20)', async () => {
+    const pedidoId = await crearPedidoEntregadoHttp(107);
+    const primero = await request(app)
+      .post(`/api/pedidos/${pedidoId}/testimonios`)
+      .send({ comentario: 'La torta estaba espectacular', calificacion: 5 });
+    expect(primero.status).toBe(201);
+    expect(primero.body.estado).toBe('pendiente');
+
+    const segundo = await request(app)
+      .post(`/api/pedidos/${pedidoId}/testimonios`)
+      .send({ comentario: 'Otro comentario distinto', calificacion: 4 });
+    expect(segundo.status).toBe(400);
+    expect(segundo.body.error).toMatch(/ya existe/i);
+  });
+
+  it('PATCH /api/testimonios/:id modera el testimonio (CA-19)', async () => {
+    const pedidoId = await crearPedidoEntregadoHttp(108);
+    const creado = await request(app)
+      .post(`/api/pedidos/${pedidoId}/testimonios`)
+      .send({ comentario: 'Excelente atención y sabor', calificacion: 5 });
+    expect(creado.status).toBe(201);
+
+    const moderado = await request(app)
+      .patch(`/api/testimonios/${creado.body.id}`)
+      .send({ estado: 'aprobado' });
+    expect(moderado.status).toBe(200);
+    expect(moderado.body.estado).toBe('aprobado');
+  });
+
+  it('PATCH /api/testimonios/:id devuelve 404 si no existe', async () => {
+    const res = await request(app)
+      .patch('/api/testimonios/9999')
+      .send({ estado: 'aprobado' });
+    expect(res.status).toBe(404);
+  });
 });

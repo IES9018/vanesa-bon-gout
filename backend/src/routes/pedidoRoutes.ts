@@ -1,7 +1,15 @@
 import { Router, Request, Response } from 'express';
 import * as pedidoService from '../services/pedidoService';
+import * as testimonioService from '../services/testimonioService';
+import { dbObtenerTestimonioPorPedido, dbCrearTestimonio } from '../db/testimonioRepository';
 import { requireAuth, requireRol } from '../middleware/auth';
-import { validateBody, crearPedidoSchema, cambiarEstadoSchema, parseId } from '../middleware/validate';
+import {
+  validateBody,
+  crearPedidoSchema,
+  cambiarEstadoSchema,
+  crearTestimonioSchema,
+  parseId,
+} from '../middleware/validate';
 import { auditLog } from '../middleware/security';
 
 const router = Router();
@@ -35,6 +43,58 @@ router.get('/cliente/:clienteId', requireAuth, (req: Request, res: Response) => 
   const pedidos = pedidoService.obtenerPedidosPorCliente(clienteId);
   res.json(pedidos.slice(0, 50));
 });
+
+// RF-07 (CA-18..CA-20): testimonio sobre un pedido entregado, 1 por pedido.
+router.post(
+  '/:id/testimonios',
+  requireAuth,
+  validateBody(crearTestimonioSchema),
+  (req: Request, res: Response) => {
+    const id = parseId(req.params.id);
+    if (id === null) {
+      res.status(400).json({ error: 'id inválido' });
+      return;
+    }
+    const dto = req.body as { comentario: string; calificacion: 1 | 2 | 3 | 4 | 5 };
+
+    const pedido = pedidoService.obtenerPedidoPorId(id);
+    if (!pedido) {
+      res.status(404).json({ error: 'Pedido no encontrado' });
+      return;
+    }
+    if (pedido.estado !== 'entregado') {
+      res.status(400).json({ error: 'Solo se puede dejar testimonio de un pedido entregado' });
+      return;
+    }
+
+    void (async (): Promise<void> => {
+      const existente = await dbObtenerTestimonioPorPedido(id);
+      if (existente === undefined) {
+        res.status(400).json({ error: 'Ya existe un testimonio para este pedido' });
+        return;
+      }
+      if (existente === null) {
+        // DB no habilitada: se opera sobre el seed en memoria.
+        const result = testimonioService.crearTestimonio(id, dto);
+        if (!result.success) {
+          res.status(400).json({ error: result.message });
+          return;
+        }
+        auditLog('testimonio.creado', { pedidoId: id, testimonioId: result.testimonio?.id });
+        res.status(201).json(result.testimonio);
+        return;
+      }
+
+      const creado = await dbCrearTestimonio(id, pedido.clienteId, dto.comentario, dto.calificacion);
+      if (!creado) {
+        res.status(500).json({ error: 'No se pudo registrar el testimonio' });
+        return;
+      }
+      auditLog('testimonio.creado', { pedidoId: id, testimonioId: creado.id });
+      res.status(201).json(creado);
+    })();
+  }
+);
 
 // T-02: checkout validado con zod antes de la lógica de negocio.
 router.post('/', requireAuth, validateBody(crearPedidoSchema), (req: Request, res: Response) => {

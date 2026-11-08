@@ -68,3 +68,14 @@ CREATE TABLE IF NOT EXISTS movimientos_inventario (
     pedido_id INTEGER REFERENCES pedidos(id),
     creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- RF-07: testimonios con moderación previa (1 por pedido).
+CREATE TABLE IF NOT EXISTS testimonios (
+    id SERIAL PRIMARY KEY,
+    pedido_id INTEGER UNIQUE REFERENCES pedidos(id) ON DELETE CASCADE,
+    cliente_id INTEGER REFERENCES clientes(id),
+    comentario TEXT NOT NULL,
+    calificacion INTEGER NOT NULL CHECK (calificacion BETWEEN 1 AND 5),
+    estado VARCHAR(10) DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'aprobado', 'rechazado')),
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

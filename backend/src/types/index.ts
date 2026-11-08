@@ -79,3 +79,20 @@ export interface CrearMovimientoDTO {
   motivo: string;
   pedidoId?: number | null;
 }
+
+// --- RF-07 Testimonios (SPEC v6) ---
+
+export interface Testimonio {
+  id: number;
+  clienteId: number;
+  pedidoId: number;
+  comentario: string;
+  calificacion: 1 | 2 | 3 | 4 | 5;
+  estado: 'pendiente' | 'aprobado' | 'rechazado';
+  creadoEn: Date;
+}
+
+export interface CrearTestimonioDTO {
+  comentario: string;
+  calificacion: 1 | 2 | 3 | 4 | 5;
+}
