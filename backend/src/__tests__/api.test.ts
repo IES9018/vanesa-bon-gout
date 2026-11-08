@@ -135,4 +135,34 @@ describe('API Bon Gout (integración)', () => {
       .send({ tipo: 'entrada', cantidad: 1, motivo: 'Compra' });
     expect(res.status).toBe(404);
   });
+
+  // --- RF-09 Dashboard (SPEC v6) ---
+  it('GET /api/dashboard/metricas devuelve ventas, estados y alertas', async () => {
+    const res = await request(app).get('/api/dashboard/metricas');
+    expect(res.status).toBe(200);
+    expect(res.body.ventas).toBeDefined();
+    expect(res.body.pedidosPorEstado).toBeDefined();
+    expect(Array.isArray(res.body.alertasInventario)).toBe(true);
+    expect(typeof res.body.totalPedidos).toBe('number');
+  });
+
+  it('PATCH /api/pedidos/:id/estado rechaza transiciones inválidas (CA-25)', async () => {
+    await request(app)
+      .post('/api/carrito/104/agregar')
+      .send({ productoId: 1, cantidad: 1 });
+    const creado = await request(app).post('/api/pedidos').send({
+      clienteId: 104,
+      fechaEntrega: new Date(Date.now() + 72 * 3600 * 1000).toISOString(),
+      metodoPago: 'mercadopago',
+      observaciones: '',
+      items: [{ productoId: 1, cantidad: 1, personalizaciones: '' }],
+    });
+    expect(creado.status).toBe(201);
+
+    const salto = await request(app)
+      .patch(`/api/pedidos/${creado.body.id}/estado`)
+      .send({ estado: 'entregado' });
+    expect(salto.status).toBe(400);
+    expect(salto.body.error).toMatch(/transición inválida/i);
+  });
 });

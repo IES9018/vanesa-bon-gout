@@ -5,6 +5,7 @@ import productoRoutes from './routes/productoRoutes';
 import carritoRoutes from './routes/carritoRoutes';
 import pedidoRoutes from './routes/pedidoRoutes';
 import inventarioRoutes from './routes/inventarioRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
 import { securityHeaders, rateLimit } from './middleware/security';
 import { dbHealth } from './db/pool';
 
@@ -32,6 +33,7 @@ app.use('/api/productos', productoRoutes);
 app.use('/api/carrito', carritoRoutes);
 app.use('/api/pedidos', pedidoRoutes);
 app.use('/api/inventario', inventarioRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/api/health', (_req, res) => {
   void dbHealth().then((db) => {

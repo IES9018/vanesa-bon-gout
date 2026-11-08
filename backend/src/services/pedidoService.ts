@@ -5,6 +5,15 @@ import { calcularTotal, limpiarCarrito, obtenerCarrito } from './carritoService'
 const pedidos: Pedido[] = [];
 let nextId = 1;
 
+// RF-09 (CA-25): transiciones permitidas del ciclo de vida del pedido.
+const TRANSICIONES: Record<Pedido['estado'], Pedido['estado'][]> = {
+  pendiente: ['en_produccion', 'cancelado'],
+  en_produccion: ['en_entrega', 'cancelado'],
+  en_entrega: ['entregado', 'cancelado'],
+  entregado: [],
+  cancelado: [],
+};
+
 export function crearPedido(dto: CrearPedidoDTO): { success: boolean; message: string; pedido?: Pedido } {
   const carrito = obtenerCarrito(dto.clienteId);
 
@@ -54,6 +63,13 @@ export function obtenerPedidos(): Pedido[] {
   return pedidos;
 }
 
+// Helper exclusivo de tests: vacía el estado en memoria para que los casos
+// no dependan del orden de ejecución de Jest.
+export function reiniciarEstado(): void {
+  pedidos.length = 0;
+  nextId = 1;
+}
+
 export function obtenerPedidoPorId(id: number): Pedido | undefined {
   return pedidos.find((p) => p.id === id);
 }
@@ -65,10 +81,20 @@ export function obtenerPedidosPorCliente(clienteId: number): Pedido[] {
 export function cambiarEstado(
   id: number,
   nuevoEstado: Pedido['estado']
-): { success: boolean; message: string } {
+): { success: boolean; message: string; code?: 'not_found' | 'transicion_invalida' } {
   const pedido = pedidos.find((p) => p.id === id);
   if (!pedido) {
-    return { success: false, message: 'Pedido no encontrado' };
+    return { success: false, message: 'Pedido no encontrado', code: 'not_found' };
+  }
+
+  // RF-09 (CA-25): ciclo de vida controlado. No se puede saltear etapas ni
+  // revivir un pedido entregado o cancelado.
+  if (!TRANSICIONES[pedido.estado].includes(nuevoEstado)) {
+    return {
+      success: false,
+      message: `Transición inválida: ${pedido.estado} → ${nuevoEstado}`,
+      code: 'transicion_invalida',
+    };
   }
 
   pedido.estado = nuevoEstado;
