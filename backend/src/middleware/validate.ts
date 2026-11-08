@@ -54,6 +54,16 @@ export const movimientoInventarioSchema = z.object({
   pedidoId: z.number().int().min(1).nullable().optional(),
 });
 
+// RF-07: testimonio y moderación (CA-18..CA-20).
+export const crearTestimonioSchema = z.object({
+  comentario: z.string().min(5).max(500),
+  calificacion: z.number().int().min(1).max(5),
+});
+
+export const moderarTestimonioSchema = z.object({
+  estado: z.enum(['aprobado', 'rechazado']),
+});
+
 export function parseId(value: unknown): number | null {
   const n = typeof value === 'string' ? parseInt(value, 10) : NaN;
   if (!Number.isInteger(n) || n < 1 || n > 1000000) return null;

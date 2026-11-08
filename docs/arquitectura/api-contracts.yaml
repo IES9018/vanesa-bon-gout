@@ -128,6 +128,78 @@ paths:
           $ref: '#/components/responses/Error404'
         '500':
           $ref: '#/components/responses/Error500'
+  /api/pedidos/{id}/testimonios:
+    post:
+      summary: Crear un testimonio sobre un pedido entregado
+      operationId: crearTestimonio
+      parameters:
+        - $ref: '#/components/parameters/PedidoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearTestimonio'
+      responses:
+        '201':
+          description: Testimonio creado, pendiente de moderación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Testimonio'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/testimonios:
+    get:
+      summary: Listar testimonios aprobados (público)
+      operationId: listarTestimonios
+      security: []
+      responses:
+        '200':
+          description: Testimonios aprobados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Testimonio'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/testimonios/{id}:
+    patch:
+      summary: Aprobar o rechazar un testimonio (solo admin)
+      operationId: moderarTestimonio
+      parameters:
+        - $ref: '#/components/parameters/TestimonioId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModerarTestimonio'
+      responses:
+        '200':
+          description: Testimonio moderado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Testimonio'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '500':
+          $ref: '#/components/responses/Error500'
   /api/inventario:
     get:
       summary: Listar inventario de ingredientes (admin/empleado)
@@ -224,6 +296,13 @@ components:
         type: integer
         minimum: 1
     InventarioId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    TestimonioId:
       name: id
       in: path
       required: true
@@ -445,6 +524,62 @@ components:
         pedidoId:
           type: integer
           nullable: true
+    Testimonio:
+      type: object
+      required:
+        - id
+        - clienteId
+        - pedidoId
+        - comentario
+        - calificacion
+        - estado
+      properties:
+        id:
+          type: integer
+        clienteId:
+          type: integer
+        pedidoId:
+          type: integer
+        comentario:
+          type: string
+          maxLength: 500
+        calificacion:
+          type: integer
+          minimum: 1
+          maximum: 5
+        estado:
+          type: string
+          enum:
+            - pendiente
+            - aprobado
+            - rechazado
+        creadoEn:
+          type: string
+          format: date-time
+    CrearTestimonio:
+      type: object
+      required:
+        - comentario
+        - calificacion
+      properties:
+        comentario:
+          type: string
+          minLength: 5
+          maxLength: 500
+        calificacion:
+          type: integer
+          minimum: 1
+          maximum: 5
+    ModerarTestimonio:
+      type: object
+      required:
+        - estado
+      properties:
+        estado:
+          type: string
+          enum:
+            - aprobado
+            - rechazado
     MetricasDashboard:
       type: object
       required:
