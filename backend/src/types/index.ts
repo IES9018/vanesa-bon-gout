@@ -80,6 +80,25 @@ export interface CrearMovimientoDTO {
   pedidoId?: number | null;
 }
 
+// --- RF-08 Notificaciones (SPEC v6, NG-09: cola simulada) ---
+
+export interface Notificacion {
+  id: number;
+  pedidoId: number;
+  canal: 'email' | 'whatsapp';
+  evento: 'pedido_creado' | 'estado_cambiado' | 'recordatorio_entrega';
+  destino: string;
+  estado: 'en_cola' | 'enviada' | 'fallida';
+  intentos: number;
+  creadoEn: Date;
+}
+
+export interface ResumenProcesamiento {
+  procesadas: number;
+  enviadas: number;
+  fallidas: number;
+}
+
 // --- RF-05 Reservas (SPEC v6) ---
 
 export interface Reserva {

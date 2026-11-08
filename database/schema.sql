@@ -100,3 +100,15 @@ CREATE TABLE IF NOT EXISTS reservas (
     estado VARCHAR(10) DEFAULT 'confirmada' CHECK (estado IN ('pendiente', 'confirmada', 'cancelada')),
     creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- RF-08: cola de salida simulada (email / WhatsApp), sin envío real (NG-09).
+CREATE TABLE IF NOT EXISTS notificaciones (
+    id SERIAL PRIMARY KEY,
+    pedido_id INTEGER REFERENCES pedidos(id) ON DELETE CASCADE,
+    canal VARCHAR(10) NOT NULL CHECK (canal IN ('email', 'whatsapp')),
+    evento VARCHAR(30) NOT NULL CHECK (evento IN ('pedido_creado', 'estado_cambiado', 'recordatorio_entrega')),
+    destino VARCHAR(120) NOT NULL,
+    estado VARCHAR(10) DEFAULT 'en_cola' CHECK (estado IN ('en_cola', 'enviada', 'fallida')),
+    intentos INTEGER DEFAULT 0,
+    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
