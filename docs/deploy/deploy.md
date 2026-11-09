@@ -65,7 +65,7 @@ el token se firma localmente con el mismo `JWT_SECRET` del servidor.
 
 ---
 
-## Despliegue en Render (URL pública, Sprint 3)
+## Despliegue en Render (URL pública, Sprint 3 - CON RF-04 a RF-09)
 
 **Fecha:** 2026-10-14 (`feature/deploy-render`)
 **Blueprint:** `render.yaml` en la raíz (postgres + backend Node + frontend

@@ -128,6 +128,53 @@ paths:
           $ref: '#/components/responses/Error404'
         '500':
           $ref: '#/components/responses/Error500'
+  /api/notificaciones:
+    get:
+      summary: Listar notificaciones de la cola (solo admin)
+      operationId: listarNotificaciones
+      parameters:
+        - name: estado
+          in: query
+          required: false
+          description: Filtra por estado de la notificación
+          schema:
+            type: string
+            enum:
+              - en_cola
+              - enviada
+              - fallida
+      responses:
+        '200':
+          description: Notificaciones en cola o procesadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notificacion'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '500':
+          $ref: '#/components/responses/Error500'
+  /api/notificaciones/procesar:
+    post:
+      summary: Procesar la cola de notificaciones (worker simulado, solo admin)
+      operationId: procesarNotificaciones
+      responses:
+        '200':
+          description: Resumen del procesamiento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumenProcesamiento'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '500':
+          $ref: '#/components/responses/Error500'
   /api/reservas/disponibilidad:
     get:
       summary: Consultar slots de reserva disponibles (público)
@@ -664,6 +711,64 @@ components:
         pedidoId:
           type: integer
           nullable: true
+    Notificacion:
+      type: object
+      required:
+        - id
+        - pedidoId
+        - canal
+        - evento
+        - destino
+        - estado
+        - intentos
+        - creadoEn
+      properties:
+        id:
+          type: integer
+        pedidoId:
+          type: integer
+        canal:
+          type: string
+          enum:
+            - email
+            - whatsapp
+        evento:
+          type: string
+          enum:
+            - pedido_creado
+            - estado_cambiado
+            - recordatorio_entrega
+        destino:
+          type: string
+          maxLength: 120
+        estado:
+          type: string
+          enum:
+            - en_cola
+            - enviada
+            - fallida
+        intentos:
+          type: integer
+          minimum: 0
+        creadoEn:
+          type: string
+          format: date-time
+    ResumenProcesamiento:
+      type: object
+      required:
+        - procesadas
+        - enviadas
+        - fallidas
+      properties:
+        procesadas:
+          type: integer
+          minimum: 0
+        enviadas:
+          type: integer
+          minimum: 0
+        fallidas:
+          type: integer
+          minimum: 0
     Reserva:
       type: object
       required:

@@ -1,6 +1,7 @@
 import { Pedido, CrearPedidoDTO } from '../types';
 import { verificarStock, obtenerPorId } from './productoService';
 import { calcularTotal, limpiarCarrito, obtenerCarrito } from './carritoService';
+import { encolarEventoPedido } from './notificacionService';
 
 const pedidos: Pedido[] = [];
 let nextId = 1;
@@ -55,6 +56,8 @@ export function crearPedido(dto: CrearPedidoDTO): { success: boolean; message: s
 
   pedidos.push(pedido);
   limpiarCarrito(dto.clienteId);
+  // CA-21: el alta del pedido dispara la notificación (cola simulada).
+  encolarEventoPedido(pedido.id, 'pedido_creado', dto.clienteId);
 
   return { success: true, message: 'Pedido creado exitosamente', pedido };
 }
@@ -98,5 +101,7 @@ export function cambiarEstado(
   }
 
   pedido.estado = nuevoEstado;
+  // CA-21: cada cambio de estado encola su notificación.
+  encolarEventoPedido(pedido.id, 'estado_cambiado', pedido.clienteId);
   return { success: true, message: `Estado actualizado a ${nuevoEstado}` };
 }
