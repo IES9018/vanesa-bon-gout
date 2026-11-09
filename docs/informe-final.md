@@ -42,3 +42,19 @@ oculta (`deuda-sprint2.md`, postmortem con 4 incidentes).
 2. Crear pedido válido (201) y mostrar rechazo <48h (400).
 3. Mostrar CI verde + contrato OpenAPI + regla de negocio en SPEC (CA-08).
 4. Non-Goal declarado: app nativa (NG-07) — se cubre con PWA.
+
+
+## Estado RF-04 a RF-09
+
+- **RF-04:** Gestión de pagos digitales (sandbox MercadoPago + transferencia) - ✅ Implementado
+- **RF-05:** Sistema de reservas/citas - ✅ Implementado
+- **RF-06:** Gestión de inventario con control de stock - ✅ Implementado
+- **RF-07:** Sistema de testimonios con moderación - ✅ Implementado
+- **RF-08:** Notificaciones automáticas (cola simulada WhatsApp/Email) - ✅ Implementado
+- **RF-09:** Dashboard administrativo con métricas y ciclo de vida - ✅ Implementado
+
+URL pública: Pendiente de desplegar en Render (ver deploy.md).
+
+## Evidencia Lighthouse
+
+LCP/INP mide después del deploy. JS mide 47KB gzip (OK). Presupuestos: LCP < 2.5s, INP < 200ms, JS < 200KB.
